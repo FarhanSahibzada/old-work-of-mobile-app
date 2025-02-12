@@ -29,7 +29,7 @@ interface FormData {
   licenseNumber: string;
   experience: string;
 }
-
+const cloudnory = ()=>{}
 const RegisterRider: React.FC = () => {
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
