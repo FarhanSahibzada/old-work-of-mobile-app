@@ -1,4 +1,20 @@
 import React, { useState } from "react";
+
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Alert,
+  StyleSheet,
+} from "react-native";
+import { useForm, Controller } from "react-hook-form";
+import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
+import { Picker } from "@react-native-picker/picker";
+import { AppRoutes } from "./constant/constant";
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Alert, StyleSheet } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from "@react-native-picker/picker";
@@ -18,7 +34,7 @@ interface FormData {
   licenseNumber: string;
   experience: string;
 }
-
+const cloudnory = ()=>{}
 const RegisterRider: React.FC = () => {
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
@@ -38,7 +54,25 @@ const RegisterRider: React.FC = () => {
   });
 
   const [vehicleImage, setVehicleImage] = useState<string | null>(null);
+const RegisterRider: React.FC = () => {
+  const { control, handleSubmit, reset } = useForm<FormData>({
+    defaultValues: {
+      name: "",
+      contact: "",
+      cnic: "",
+      email: "",
+      password: "",
+      address: "",
+      gender: "",
+      vehicleType: "",
+      vehicleNumber: "",
+      vehicleImage: null,
+      licenseNumber: "",
+      experience: "",
+    },
+  });
 
+  const [vehicleImage, setVehicleImage] = useState<string | null>(null);
   const pickVehicleImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -51,7 +85,36 @@ const RegisterRider: React.FC = () => {
       setVehicleImage(result.assets[0].uri);
     }
   };
+  const onSubmit = async (data: FormData) => {
+    const formDataWithImage = { ...data, vehicleImage };
+    console.log("Submitted Data:", formDataWithImage.email);
 
+    const obj = {
+      email: formDataWithImage.email,
+      password: formDataWithImage.password,
+      name: formDataWithImage.name,
+      gender: formDataWithImage.gender,
+      phoneNumber: formDataWithImage.contact,
+      address: formDataWithImage.address,
+      // profileImage : formDataWithImage.profileImage,
+      profileImage:
+        "https://cdn-icons-png.flaticon.com/512/6858/6858504.png",
+      nicNo: formDataWithImage.cnic,
+      vehicleCategory: formDataWithImage.vehicleType,
+      vehicleNo: formDataWithImage.vehicleType,
+      licenseNo: "ked-0987",
+      // vehicleImage: formDataWithImage.vehicleImage,
+      vehicleImage: "https://i.dawn.com/primary/2022/05/6293d74452150.jpg",
+      role: "rider",
+    };
+
+    const res = await axios.post(AppRoutes.signupRider, obj);
+    console.log(res);
+
+    Alert.alert(
+      "Registration Successful",
+      JSON.stringify(formDataWithImage, null, 2)
+    );
   const onSubmit = (data: FormData) => {
     const formDataWithImage = { ...data, vehicleImage };
     console.log("Submitted Data:", formDataWithImage);
@@ -69,6 +132,12 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="name"
           render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter your name"
+            />
             <TextInput style={styles.input} onChangeText={onChange} value={value} placeholder="Enter your name" />
           )}
         />
@@ -79,6 +148,13 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="contact"
           render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              keyboardType="phone-pad"
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter your contact"
+            />
             <TextInput style={styles.input} keyboardType="phone-pad" onChangeText={onChange} value={value} placeholder="Enter your contact" />
           )}
         />
@@ -89,6 +165,13 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="cnic"
           render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter your CNIC"
+            />
             <TextInput style={styles.input} keyboardType="numeric" onChangeText={onChange} value={value} placeholder="Enter your CNIC" />
           )}
         />
@@ -99,6 +182,13 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="email"
           render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              keyboardType="email-address"
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter your email"
+            />
             <TextInput style={styles.input} keyboardType="email-address" onChangeText={onChange} value={value} placeholder="Enter your email" />
           )}
         />
@@ -109,6 +199,13 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="password"
           render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              secureTextEntry
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter your password"
+            />
             <TextInput style={styles.input} secureTextEntry onChangeText={onChange} value={value} placeholder="Enter your password" />
           )}
         />
@@ -119,6 +216,12 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="address"
           render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter your address"
+            />
             <TextInput style={styles.input} onChangeText={onChange} value={value} placeholder="Enter your address" />
           )}
         />
@@ -129,6 +232,10 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="gender"
           render={({ field: { onChange, value } }) => (
+            <Picker
+              selectedValue={value}
+              onValueChange={onChange}
+              style={styles.picker}
             <Picker selectedValue={value} onValueChange={onChange} style={styles.picker}>
               <Picker.Item label="Select Gender" value="" />
               <Picker.Item label="Male" value="Male" />
@@ -143,6 +250,11 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="vehicleType"
           render={({ field: { onChange, value } }) => (
+            <Picker
+              selectedValue={value}
+              onValueChange={onChange}
+              style={styles.picker}
+            >
             <Picker selectedValue={value} onValueChange={onChange} style={styles.picker}>
               <Picker.Item label="Select Vehicle Type" value="" />
               <Picker.Item label="Bike" value="Bike" />
@@ -158,11 +270,32 @@ const RegisterRider: React.FC = () => {
           control={control}
           name="vehicleNumber"
           render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter vehicle number"
+            />
             <TextInput style={styles.input} onChangeText={onChange} value={value} placeholder="Enter vehicle number" />
           )}
         />
 
         {/* Vehicle Image */}
+        <TouchableOpacity
+          onPress={pickVehicleImage}
+          style={styles.imagePickerButton}
+        >
+          <Text style={styles.imagePickerText}>Pick Vehicle Image</Text>
+        </TouchableOpacity>
+        {vehicleImage && (
+          <Image source={{ uri: vehicleImage }} style={styles.image} />
+        )}
+
+        {/* Submit Button */}
+        <TouchableOpacity
+          onPress={handleSubmit(onSubmit)}
+          style={styles.registerButton}
+        >
         <TouchableOpacity onPress={pickVehicleImage} style={styles.imagePickerButton}>
           <Text style={styles.imagePickerText}>Pick Vehicle Image</Text>
         </TouchableOpacity>
@@ -179,6 +312,50 @@ const RegisterRider: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 20, backgroundColor: "#FFFFFF" },
+  formContainer: {
+    backgroundColor: "#F8F9FA",
+    padding: 20,
+    borderRadius: 10,
+    elevation: 3,
+  },
+  label: { color: "#333", fontSize: 16, marginBottom: 8, fontWeight: "500" },
+  input: {
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+    fontSize: 16,
+    color: "#333",
+  },
+  picker: {
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  imagePickerButton: {
+    backgroundColor: "#007BFF",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  imagePickerText: { color: "#FFFFFF", fontSize: 16, fontWeight: "500" },
+  image: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+    marginBottom: 15,
+    borderRadius: 8,
+  },
+  registerButton: {
+    backgroundColor: "#28A745",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
   formContainer: { backgroundColor: "#F8F9FA", padding: 20, borderRadius: 10, elevation: 3 },
   label: { color: "#333", fontSize: 16, marginBottom: 8, fontWeight: "500" },
   input: { borderWidth: 1, borderColor: "#E0E0E0", borderRadius: 8, padding: 12, marginBottom: 10, fontSize: 16, color: "#333" },

@@ -1,5 +1,5 @@
-import { ThemedButton } from '@/components/ThemedButton';
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedButton } from '../components/ThemedButton';
+import { ThemedText } from '../components/ThemedText';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
 import React from 'react';

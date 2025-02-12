@@ -11,7 +11,7 @@ dotenv.config(); // Load .env file
 const userRouter = express.Router();
 
 // for sign up
-const registerSchema = Joi.object({
+const userRegisterSchema = Joi.object({
   email: Joi.string().email({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },
@@ -24,8 +24,8 @@ const registerSchema = Joi.object({
   profileImage: Joi.string().min(10).max(50).required(),
 });
 
-userRouter.post("/signup", async (req, res) => {
-  const { error, value } = registerSchema.validate(req.body);
+userRouter.post("/signupUser", async (req, res) => {
+  const { error, value } = userRegisterSchema.validate(req.body);
   if (error) return sendResponse(res, 400, null, true, error.message);
   const user = await ClientModel.findOne({ email: value.email });
   if (user) return sendResponse(res, 404, null, true, "User Already Taken");
@@ -36,17 +36,49 @@ userRouter.post("/signup", async (req, res) => {
   sendResponse(res, 201, newUser, false, "User Registered Successfully");
 });
 
-
-// for login API
-const loginSchema = Joi.object({
+const riderRegisterSchema = Joi.object({
   email: Joi.string().email({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },
-  }).required(),
+  }),
+  password: Joi.string().min(8).required(),
+  name: Joi.string().min(3).max(18).required(),
+  gender: Joi.string().required(),
+  phoneNumber: Joi.number(),
+  address: Joi.string().min(10).max(50).required(),
+  profileImage: Joi.string().required(),
+  nicNo: Joi.string().min(13).required(),
+  vehicleCategory: Joi.string().required(),
+  vehicleNo: Joi.string().required(),
+  licenseNo: Joi.string().required(),
+  vehicleImage: Joi.string().required(),
+  role: Joi.string().required(),
+});
+
+userRouter.post("/signupRider", async (req, res) => {
+  const { error, value } = riderRegisterSchema.validate(req.body);
+  if (error) return sendResponse(res, 400, null, true, error.message);
+  const user = await ClientModel.findOne({ email: value.email });
+  if (user) return sendResponse(res, 404, null, true, "User Already Taken");
+  const hashedPass = await bcrypt.hash(value.password, 12);
+  value.password = hashedPass;
+  let newUser = new ClientModel({ ...value });
+  newUser = await newUser.save();
+  sendResponse(res, 201, newUser, false, "User Registered Successfully");
+});
+
+// for login API
+const loginSchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net"] },
+    })
+    .required(),
   password: Joi.string().min(8).required(),
 });
 
-userRouter.post('/login', async (req, res) => {
+userRouter.post("/login", async (req, res) => {
   const { error, value } = loginSchema.validate(req.body);
   if (error) return sendResponse(res, 400, null, true, error.message);
 
@@ -67,13 +99,21 @@ userRouter.post('/login', async (req, res) => {
     { expiresIn: "1h" }
   );
 
-  return sendResponse(res, 200, { user, token }, false, "User Login Successfully");
+  return sendResponse(
+    res,
+    200,
+    { user, token },
+    false,
+    "User Login Successfully"
+  );
 });
 
 // Route to get current user
 userRouter.get("/currentUser", verifyToken, async (req, res) => {
   try {
-    const currentUser = await ClientModel.findById(req.user.id).select("-password -address");
+    const currentUser = await ClientModel.findById(req.user.id).select(
+      "-password -address"
+    );
     console.log("Current User from DB:", currentUser);
     sendResponse(res, 200, currentUser, false, "Fetched Data Successfully");
   } catch (error) {
@@ -81,11 +121,10 @@ userRouter.get("/currentUser", verifyToken, async (req, res) => {
   }
 });
 
-
 userRouter.get("/allUsers", async (req, res) => {
   try {
     const allUsers = await ClientModel.find().select("-password -address");
-    
+
     if (allUsers.length === 0) {
       return sendResponse(res, 404, null, true, "No users found.");
     }
@@ -98,5 +137,4 @@ userRouter.get("/allUsers", async (req, res) => {
   }
 });
 
-  
-export default userRouter
+export default userRouter;
