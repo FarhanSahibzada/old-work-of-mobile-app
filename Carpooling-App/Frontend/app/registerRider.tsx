@@ -97,8 +97,7 @@ const RegisterRider: React.FC = () => {
       phoneNumber: formDataWithImage.contact,
       address: formDataWithImage.address,
       // profileImage : formDataWithImage.profileImage,
-      profileImage:
-        "https://cdn-icons-png.flaticon.com/512/6858/6858504.png",
+      profileImage: "https://cdn-icons-png.flaticon.com/512/6858/6858504.png",
       nicNo: formDataWithImage.cnic,
       vehicleCategory: formDataWithImage.vehicleType,
       vehicleNo: formDataWithImage.vehicleType,
