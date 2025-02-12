@@ -1,200 +1,306 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Alert, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Alert,
+  StyleSheet,
+} from "react-native";
+import { useForm, Controller } from "react-hook-form";
 import * as ImagePicker from "expo-image-picker";
-import { Formik } from "formik";
-import * as Yup from "yup";
+import axios from "axios";
+import { Picker } from "@react-native-picker/picker";
+import { AppRoutes } from "./constant/constant";
 
-const RegisterRider = () => {
-  const [image, setImage] = useState<string | null>(null);
+interface FormData {
+  name: string;
+  contact: string;
+  cnic: string;
+  email: string;
+  password: string;
+  address: string;
+  gender: string;
+  vehicleType: string;
+  vehicleNumber: string;
+  vehicleImage: string | null;
+  licenseNumber: string;
+  experience: string;
+}
 
-  const pickImage = async () => {
+const RegisterRider: React.FC = () => {
+  const { control, handleSubmit, reset } = useForm<FormData>({
+    defaultValues: {
+      name: "",
+      contact: "",
+      cnic: "",
+      email: "",
+      password: "",
+      address: "",
+      gender: "",
+      vehicleType: "",
+      vehicleNumber: "",
+      vehicleImage: null,
+      licenseNumber: "",
+      experience: "",
+    },
+  });
+
+  const [vehicleImage, setVehicleImage] = useState<string | null>(null);
+
+  const pickVehicleImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 4],
-      quality: 1,
+      aspect: [4, 4], // yaha image crop ho rhi h
+      quality: 1, //full image quality set kerte hen
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setVehicleImage(result.assets[0].uri);
     }
   };
 
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
-    contact: Yup.string().matches(/^\d{11}$/, "Invalid contact number").required("Contact is required"),
-    cnic: Yup.string().matches(/^\d{13}$/, "Invalid CNIC").required("CNIC is required"),
-    email: Yup.string().email("Invalid email").required("Email is required"),
-    password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
-    address: Yup.string().required("Address is required"),
-    gender: Yup.string().required("Select gender"),
-  });
+  const onSubmit = async (data: FormData) => {
+    const formDataWithImage = { ...data, vehicleImage };
+    console.log("Submitted Data:", formDataWithImage.email);
+
+    const obj = {
+      email: formDataWithImage.email,
+      password: formDataWithImage.password,
+      name: formDataWithImage.name,
+      gender: formDataWithImage.gender,
+      phoneNumber: formDataWithImage.contact,
+      address: formDataWithImage.address,
+      // profileImage : formDataWithImage.profileImage,
+      profileImage:
+        "https://cdn-icons-png.flaticon.com/512/6858/6858504.png",
+      nicNo: formDataWithImage.cnic,
+      vehicleCategory: formDataWithImage.vehicleType,
+      vehicleNo: formDataWithImage.vehicleType,
+      licenseNo: "ked-0987",
+      // vehicleImage: formDataWithImage.vehicleImage,
+      vehicleImage: "https://i.dawn.com/primary/2022/05/6293d74452150.jpg",
+      role: "rider",
+    };
+
+    const res = await axios.post(AppRoutes.signupRider, obj);
+    console.log(res);
+
+    Alert.alert(
+      "Registration Successful",
+      JSON.stringify(formDataWithImage, null, 2)
+    );
+    reset();
+    setVehicleImage(null);
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Formik
-        initialValues={{ name: "", contact: "", cnic: "", email: "", password: "", address: "", gender: "" }}
-        validationSchema={validationSchema}
-        onSubmit={(values, { resetForm }) => {
-          console.log("Form Data:", { ...values, image });
-          Alert.alert("Registration Successful", JSON.stringify(values, null, 2));
-
-          resetForm();
-          setImage(null);
-        }}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <View style={styles.formContainer}>
-            <Text style={styles.label}>Name</Text>
+      <View style={styles.formContainer}>
+        {/* Name */}
+        <Text style={styles.label}>Full Name</Text>
+        <Controller
+          control={control}
+          name="name"
+          render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
-              onChangeText={handleChange("name")}
-              onBlur={handleBlur("name")}
-              value={values.name}
+              onChangeText={onChange}
+              value={value}
               placeholder="Enter your name"
-              placeholderTextColor="#999"
             />
-            {touched.name && errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-            <Text style={styles.label}>Contact</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              onChangeText={handleChange("contact")}
-              onBlur={handleBlur("contact")}
-              value={values.contact}
-              placeholder="Enter your contact number"
-              placeholderTextColor="#999"
-            />
-            {touched.contact && errors.contact && <Text style={styles.errorText}>{errors.contact}</Text>}
+          )}
+        />
 
-            <Text style={styles.label}>CNIC</Text>
+        {/* Contact */}
+        <Text style={styles.label}>Contact</Text>
+        <Controller
+          control={control}
+          name="contact"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              keyboardType="phone-pad"
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter your contact"
+            />
+          )}
+        />
+
+        {/* CNIC */}
+        <Text style={styles.label}>CNIC</Text>
+        <Controller
+          control={control}
+          name="cnic"
+          render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
               keyboardType="numeric"
-              onChangeText={handleChange("cnic")}
-              onBlur={handleBlur("cnic")}
-              value={values.cnic}
+              onChangeText={onChange}
+              value={value}
               placeholder="Enter your CNIC"
-              placeholderTextColor="#999"
             />
-            {touched.cnic && errors.cnic && <Text style={styles.errorText}>{errors.cnic}</Text>}
+          )}
+        />
 
-            {/* Email Field */}
-            <Text style={styles.label}>Email</Text>
+        {/* Email */}
+        <Text style={styles.label}>Email</Text>
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
               keyboardType="email-address"
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-              value={values.email}
+              onChangeText={onChange}
+              value={value}
               placeholder="Enter your email"
-              placeholderTextColor="#999"
             />
-            {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+          )}
+        />
 
-            {/* Password Field */}
-            <Text style={styles.label}>Password</Text>
+        {/* Password */}
+        <Text style={styles.label}>Password</Text>
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
               secureTextEntry
-              onChangeText={handleChange("password")}
-              onBlur={handleBlur("password")}
-              value={values.password}
+              onChangeText={onChange}
+              value={value}
               placeholder="Enter your password"
-              placeholderTextColor="#999"
             />
-            {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+          )}
+        />
 
-            {/* Address Field */}
-            <Text style={styles.label}>Address</Text>
+        {/* Address */}
+        <Text style={styles.label}>Address</Text>
+        <Controller
+          control={control}
+          name="address"
+          render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
-              onChangeText={handleChange("address")}
-              onBlur={handleBlur("address")}
-              value={values.address}
+              onChangeText={onChange}
+              value={value}
               placeholder="Enter your address"
-              placeholderTextColor="#999"
             />
-            {touched.address && errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
+          )}
+        />
 
-            {/* Gender Field */}
-            <Text style={styles.label}>Gender</Text>
+        {/* Gender */}
+        <Text style={styles.label}>Gender</Text>
+        <Controller
+          control={control}
+          name="gender"
+          render={({ field: { onChange, value } }) => (
+            <Picker
+              selectedValue={value}
+              onValueChange={onChange}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Gender" value="" />
+              <Picker.Item label="Male" value="Male" />
+              <Picker.Item label="Female" value="Female" />
+            </Picker>
+          )}
+        />
+
+        {/* Vehicle Type (Dropdown) */}
+        <Text style={styles.label}>Vehicle Type</Text>
+        <Controller
+          control={control}
+          name="vehicleType"
+          render={({ field: { onChange, value } }) => (
+            <Picker
+              selectedValue={value}
+              onValueChange={onChange}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Vehicle Type" value="" />
+              <Picker.Item label="Bike" value="Bike" />
+              <Picker.Item label="Car" value="Car" />
+              <Picker.Item label="Rickshaw" value="Rickshaw" />
+            </Picker>
+          )}
+        />
+
+        {/* Vehicle Number */}
+        <Text style={styles.label}>Vehicle Number</Text>
+        <Controller
+          control={control}
+          name="vehicleNumber"
+          render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
-              onChangeText={handleChange("gender")}
-              onBlur={handleBlur("gender")}
-              value={values.gender}
-              placeholder="Male / Female"
-              placeholderTextColor="#999"
+              onChangeText={onChange}
+              value={value}
+              placeholder="Enter vehicle number"
             />
-            {touched.gender && errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
+          )}
+        />
 
-            {/* Image Picker */}
-            <TouchableOpacity onPress={pickImage} style={styles.imagePickerButton}>
-              <Text style={styles.imagePickerText}>Pick an Image</Text>
-            </TouchableOpacity>
-            {image && <Image source={{ uri: image }} style={styles.image} />}
-
-            {/* Register Button */}
-            <TouchableOpacity onPress={() => handleSubmit()} style={styles.registerButton}>
-              <Text style={styles.registerButtonText}>Register</Text>
-            </TouchableOpacity>
-          </View>
+        {/* Vehicle Image */}
+        <TouchableOpacity
+          onPress={pickVehicleImage}
+          style={styles.imagePickerButton}
+        >
+          <Text style={styles.imagePickerText}>Pick Vehicle Image</Text>
+        </TouchableOpacity>
+        {vehicleImage && (
+          <Image source={{ uri: vehicleImage }} style={styles.image} />
         )}
-      </Formik>
+
+        {/* Submit Button */}
+        <TouchableOpacity
+          onPress={handleSubmit(onSubmit)}
+          style={styles.registerButton}
+        >
+          <Text style={styles.registerButtonText}>Register</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#FFFFFF", // White background
-  },
+  container: { flexGrow: 1, padding: 20, backgroundColor: "#FFFFFF" },
   formContainer: {
-    backgroundColor: "#F8F9FA", // Light gray background for the form
+    backgroundColor: "#F8F9FA",
     padding: 20,
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
     elevation: 3,
   },
-  label: {
-    color: "#333", // Dark gray for labels
-    fontSize: 16,
-    marginBottom: 8,
-    fontWeight: "500",
-  },
+  label: { color: "#333", fontSize: 16, marginBottom: 8, fontWeight: "500" },
   input: {
     borderWidth: 1,
-    borderColor: "#E0E0E0", // Light gray border
+    borderColor: "#E0E0E0",
     borderRadius: 8,
     padding: 12,
-    marginBottom: 15,
-    backgroundColor: "#FFFFFF", // White background
+    marginBottom: 10,
     fontSize: 16,
-    color: "#333", // Dark gray text
+    color: "#333",
   },
-  errorText: {
-    color: "#FF3B30", // Red for errors
-    fontSize: 14,
+  picker: {
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
     marginBottom: 10,
   },
   imagePickerButton: {
-    backgroundColor: "#007BFF", // Blue color for the image picker button
+    backgroundColor: "#007BFF",
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 15,
   },
-  imagePickerText: {
-    color: "#FFFFFF", // White text
-    fontSize: 16,
-    fontWeight: "500",
-  },
+  imagePickerText: { color: "#FFFFFF", fontSize: 16, fontWeight: "500" },
   image: {
     width: 100,
     height: 100,
@@ -203,17 +309,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   registerButton: {
-    backgroundColor: "#28A745", // Green color for the register button
+    backgroundColor: "#28A745",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
     marginTop: 10,
   },
-  registerButtonText: {
-    color: "#FFFFFF", // White text
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  registerButtonText: { color: "#FFFFFF", fontSize: 18, fontWeight: "bold" },
 });
 
 export default RegisterRider;
