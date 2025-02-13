@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   registerButton: {
-    backgroundColor: "#FF5722",
+    backgroundColor: "#DDEB9D",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",

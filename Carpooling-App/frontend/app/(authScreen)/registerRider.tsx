@@ -215,7 +215,7 @@ const RegisterRider = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 20, backgroundColor: "#FFFFFF" },
+  container: { justifyContent : "center" , paddingVertical : 10 ,  backgroundColor: "#FFFFFF" , alignItems : "center" , flexGrow : 1 , },
   formContainer: { backgroundColor: "#F8F9FA", padding: 20, borderRadius: 10, elevation: 3 },
   label: { color: "#333", fontSize: 16, marginBottom: 8, fontWeight: "500" },
   input: { borderWidth: 1, borderColor: "#E0E0E0", borderRadius: 8, padding: 12, marginBottom: 10, fontSize: 16, color: "#333" },
