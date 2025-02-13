@@ -7,16 +7,17 @@ dotenv.config(); // Load .env file
 const ridesRoutes = express.Router();
 
 ridesRoutes.post("/rider", async (req, res) => {
-  try {
-    const { userID, from, to } = req.body;
-    let newRide = RidesModel({userID, from, to});
-    newRide = await newRide.save();
-    sendResponse(res, 200, null, false, "Ride Added Successfully");
-  } catch (error) {
-    sendResponse(res, 404, null, true, error.message);
-  }
-});
+    try {
+      const { userID, from, to } = req.body;
+      let newRide = RidesModel({userID, from, to});
+      newRide = await newRide.save();
+      sendResponse(res, 200, null, false, "Ride Added Successfully");
+    } catch (error) {
+      sendResponse(res, 404, null, true, error.message);
+    }
+  });
 
-ridesRoutes.post("/", async (req, res) => {});
+ridesRoutes.get("/", async (req, res) => {});
+ridesRoutes.put("/", async (req, res) => {});
 
 export default ridesRoutes;
