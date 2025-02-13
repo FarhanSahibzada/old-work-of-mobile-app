@@ -1,4 +1,4 @@
-# 🚗 Ride Sharing & Carpooling App
+# 🚗  Ride Sharing & Carpooling App
 
 A **real-time ride-sharing and carpooling mobile app** built using **Socket.io** for **live tracking** and **AI-based ride suggestions** for better ride matching and route optimization. The project includes an **Admin Panel** for monitoring rides, transactions, and earnings.
 
