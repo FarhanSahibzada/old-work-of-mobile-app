@@ -7,7 +7,7 @@ const LogIn = () => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
       email: "a",
-      password: "",dsada
+      password: "",
     },
   });
 
@@ -21,7 +21,7 @@ const LogIn = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={require("@/assets/images/riderlogo.png")} style={styles.logo} />
 
-      <Text style={styles.title}>Welcome to Sharing Rider App</Text>
+      <Text style={styles.title}>Welcome to Care Pool App</Text>
 
       <Text style={styles.description}>
         Join our community to share rides, save costs, and make your journey more enjoyable!
