@@ -8,11 +8,7 @@ import { View, StyleSheet, Dimensions, Image, ScrollView, ActivityIndicator } fr
 function index() {
   const router = useRouter();
 
-  useEffect(()=>{
-    setTimeout(() => {
-      router.replace('/pages/DriverScreen')
-    }, 4000);
-  },[])
+
   return (
     // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     //   <ActivityIndicator size="large" color="#0000ff" />
@@ -29,7 +25,7 @@ function index() {
 
       {/* Welcome Text */}
       <ThemedText style={styles.title} type="title">
-        Welcome to Sharing Rider App
+        Welcome to Car Pool App
       </ThemedText>
 
       {/* Description Text */}
