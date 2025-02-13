@@ -6,6 +6,7 @@ import axios from 'axios'
 import * as ImagePicker from "expo-image-picker";
 import { Stack } from "expo-router";
 import { AppRoutes } from "../constant/constant";
+import { useRouter } from "expo-router";
 
 interface FormData {
   name: string;
@@ -39,8 +40,8 @@ const RegisterRider = () => {
       // experience: "",
     },
   });
-
   const [vehicleImage, setVehicleImage] = useState<string | null>(null);
+  const router = useRouter()
 
   const pickVehicleImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -77,14 +78,9 @@ const RegisterRider = () => {
         role: "rider",
       };
       try {
-        console.log( "routes aya",obj)
         const res = await axios.post(AppRoutes.signupRider, obj);
-        console.log( "res",res)
       if(res && res.data ){
-        Alert.alert(
-          "Registration Successful",
-          JSON.stringify(formDataWithImage, null, 2)
-        )
+        router.push('/(tabs)/(Home)')
       }
     } catch (error) {
       console.log("error when submiting the data" , error)
@@ -96,7 +92,7 @@ const RegisterRider = () => {
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView contentContainerStyle={styles.container} style={{marginTop : 20}}>
         <View>
-          <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 12 }}>Sign Up</Text>
+          <Text style={{ fontSize: 28, fontWeight: "800", marginBottom: 12 , color : "#28A745" }}>Sign Up</Text>
         </View>
         <View style={styles.formContainer}>
           {/* Name */}
@@ -159,35 +155,6 @@ const RegisterRider = () => {
             )}
           />
 
-          {/* Gender */}
-          <Text style={styles.label}>Gender</Text>
-          <Controller
-            control={control}
-            name="gender"
-            render={({ field: { onChange, value } }) => (
-              <Picker selectedValue={value} onValueChange={onChange} style={styles.picker}>
-                <Picker.Item label="Select Gender" value="" />
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Female" value="Female" />
-              </Picker>
-            )}
-          />
-
-          {/* Vehicle Type (Dropdown) */}
-          <Text style={styles.label}>Vehicle Type</Text>
-          <Controller
-            control={control}
-            name="vehicleType"
-            render={({ field: { onChange, value } }) => (
-              <Picker selectedValue={value} onValueChange={onChange} style={styles.picker}>
-                <Picker.Item label="Select Vehicle Type" value="" />
-                <Picker.Item label="Bike" value="Bike" />
-                <Picker.Item label="Car" value="Car" />
-                <Picker.Item label="Rickshaw" value="Rickshaw" />
-              </Picker>
-            )}
-          />
-
           {/* Vehicle Number */}
           <Text style={styles.label}>Vehicle Number</Text>
           <Controller
@@ -197,6 +164,42 @@ const RegisterRider = () => {
               <TextInput style={styles.input} onChangeText={onChange} value={value} placeholder="Enter vehicle number" />
             )}
           />
+
+          {/* Gender */}
+          <Text style={styles.label}>Gender</Text>
+          <Controller
+            control={control}
+            name="gender"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.picker}>
+              <Picker selectedValue={value} onValueChange={onChange}  style={{ height: 50, width: "100%" }}>
+                <Picker.Item label="Select Gender" value="" />
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female" />
+              </Picker>
+              </View>
+            )}
+          />
+
+          {/* Vehicle Type (Dropdown) */}
+          <Text style={styles.label}>Vehicle Type</Text>
+
+          <Controller
+            control={control}
+            name="vehicleType"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.picker}>
+              <Picker selectedValue={value} onValueChange={onChange}  style={{ height: 50, width: "100%" }}>
+                <Picker.Item label="Select Vehicle Type" value="" />
+                <Picker.Item label="Bike" value="Bike" />
+                <Picker.Item label="Car" value="Car" />
+                <Picker.Item label="Rickshaw" value="Rickshaw" />
+              </Picker>
+              </View>
+            )}
+          />
+
+          
 
           {/* Vehicle Image */}
           <TouchableOpacity onPress={pickVehicleImage} style={styles.imagePickerButton}>
@@ -215,11 +218,22 @@ const RegisterRider = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { justifyContent : "center" , paddingVertical : 10 ,  backgroundColor: "#FFFFFF" , alignItems : "center" , flexGrow : 1 , },
-  formContainer: { backgroundColor: "#F8F9FA", padding: 20, borderRadius: 10, elevation: 3 },
+  container: {
+    paddingBottom : 70 ,
+    flexGrow : 1 ,
+    justifyContent : 'center',
+    alignItems : "center",
+    paddingHorizontal : 10, 
+    marginTop : 40,
+  },
+  formContainer: { 
+    backgroundColor: "#F8F9FA",
+     padding: 10, borderRadius: 20, elevation: 3,
+     paddingHorizontal : 20 ,
+    width : "90%" },
   label: { color: "#333", fontSize: 16, marginBottom: 8, fontWeight: "500" },
   input: { borderWidth: 1, borderColor: "#E0E0E0", borderRadius: 8, padding: 12, marginBottom: 10, fontSize: 16, color: "#333" },
-  picker: { borderWidth: 1, borderColor: "#E0E0E0", borderRadius: 8, marginBottom: 10 },
+  picker: { borderWidth: 2, borderColor: "#28A745", borderRadius: 8, marginBottom: 10 },
   imagePickerButton: { backgroundColor: "#007BFF", padding: 12, borderRadius: 8, alignItems: "center", marginBottom: 15 },
   imagePickerText: { color: "#FFFFFF", fontSize: 16, fontWeight: "500" },
   image: { width: 100, height: 100, alignSelf: "center", marginBottom: 15, borderRadius: 8 },

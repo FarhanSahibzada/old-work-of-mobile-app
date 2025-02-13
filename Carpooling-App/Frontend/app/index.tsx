@@ -69,7 +69,6 @@ function index() {
     </ScrollView>
     </> 
     
-
   );
 }
 

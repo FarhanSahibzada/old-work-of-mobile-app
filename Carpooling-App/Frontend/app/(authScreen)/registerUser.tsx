@@ -56,24 +56,13 @@ const RegisterUser = () => {
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView contentContainerStyle={styles.container} style={{ marginTop: 20 }}>
         <View>
-          <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 12 }}>Sign Up</Text>
+          <Text style={{ fontSize: 28, fontWeight: "800", marginBottom: 12 , color : "#28A745"}}>Sign Up</Text>
         </View>
 
         <View style={styles.formContainer}>
-          {/* Role Selection */}
-          <Text style={styles.label}>Select Role</Text>
-          <View style={styles.roleContainer}>
-            <TouchableOpacity onPress={() => setRole("user")} style={[styles.roleButton, role === "user" && styles.activeRole]}>
-              <Text style={styles.roleText}>User</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setRole("rider")} style={[styles.roleButton, role === "rider" && styles.activeRole]}>
-              <Text style={styles.roleText}>Rider</Text>
-            </TouchableOpacity>
-          </View>
 
           {/* User Form */}
-          {role === "user" && (
-            <>
+            
               <Text style={styles.label}>Name</Text>
               <Controller control={control} name="name" rules={{ required: "Name is required" }}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -113,43 +102,9 @@ const RegisterUser = () => {
                   </>
                 )}
               />
-            </>
-          )}
+          
 
-          {/* Rider Form */}
-          {role === "rider" && (
-            <>
-              <Text style={styles.label}>Name</Text>
-              <Controller control={control} name="name" rules={{ required: "Name is required" }}
-                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <>
-                    <TextInput style={styles.input} onChangeText={onChange} onBlur={onBlur} value={value} placeholder="Enter your name" />
-                    {error && <Text style={styles.errorText}>{error.message}</Text>}
-                  </>
-                )}
-              />
-
-              <Text style={styles.label}>Contact No</Text>
-              <Controller control={control} name="contact" rules={{ required: "Contact is required" }}
-                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <>
-                    <TextInput style={styles.input} onChangeText={onChange} onBlur={onBlur} value={value} placeholder="Enter your contact" keyboardType="numeric" />
-                    {error && <Text style={styles.errorText}>{error.message}</Text>}
-                  </>
-                )}
-              />
-
-              <Text style={styles.label}>NIC No</Text>
-              <Controller control={control} name="nicNo" rules={{ required: "NIC No is required" }}
-                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <>
-                    <TextInput style={styles.input} onChangeText={onChange} onBlur={onBlur} value={value} placeholder="Enter your NIC No" keyboardType="numeric" />
-                    {error && <Text style={styles.errorText}>{error.message}</Text>}
-                  </>
-                )}
-              />
-            </>
-          )}
+          
           
           {/* Register Button */}
           <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.registerButton} disabled={!isValid}>
@@ -243,7 +198,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   registerButton: {
-    backgroundColor: "#DDEB9D",
+    backgroundColor: "#28A745",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
