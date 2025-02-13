@@ -6,8 +6,10 @@ import { Stack } from "expo-router";
 const LogIn = () => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      email: "a",
-      password: "",
+
+      email: "",
+      password: ""
+
     },
   });
 
@@ -17,72 +19,74 @@ const LogIn = () => {
 
   return (
     <>
-     <Stack.Screen options={{ headerShown: false }} />
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image source={require("@/assets/images/riderlogo.png")} style={styles.logo} />
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView contentContainerStyle={styles.container}>
+        <Image source={require("@/assets/images/riderlogo.png")} style={styles.logo} />
 
-      <Text style={styles.title}>Welcome to Care Pool App</Text>
 
-      <Text style={styles.description}>
-        Join our community to share rides, save costs, and make your journey more enjoyable!
-      </Text>
+      <Text style={styles.title}>Welcome to Car Pool App</Text>
 
-      <View style={styles.form}>
-        {/* Email Input */}
-        <Text style={styles.label}>Email</Text>
-        <Controller
-          control={control}
-          name="email"
-          rules={{
-            required: "Email is required",
-            pattern: { value: /^\S+@\S+\.\S+$/, message: "Enter a valid email" },
-          }}
-          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your email"
-                keyboardType="email-address"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
-              {error && <Text style={styles.errorText}>{error.message}</Text>}
-            </>
-          )}
-        />
 
-        {/* Password Input */}
-        <Text style={styles.label}>Password</Text>
-        <Controller
-          control={control}
-          name="password"
-          rules={{
-            required: "Password is required",
-            minLength: { value: 6, message: "Password must be at least 6 characters" },
-          }}
-          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                secureTextEntry
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
-              {error && <Text style={styles.errorText}>{error.message}</Text>}
-            </>
-          )}
-        />
+        <Text style={styles.description}>
+          Join our community to share rides, save costs, and make your journey more enjoyable!
+        </Text>
 
-        {/* Login Button */}
-        <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  </>
+        <View style={styles.form}>
+          {/* Email Input */}
+          <Text style={styles.label}>Email</Text>
+          <Controller
+            control={control}
+            name="email"
+            rules={{
+              required: "Email is required",
+              pattern: { value: /^\S+@\S+\.\S+$/, message: "Enter a valid email" },
+            }}
+            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              <>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your email"
+                  keyboardType="email-address"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+                {error && <Text style={styles.errorText}>{error.message}</Text>}
+              </>
+            )}
+          />
+
+          {/* Password Input */}
+          <Text style={styles.label}>Password</Text>
+          <Controller
+            control={control}
+            name="password"
+            rules={{
+              required: "Password is required",
+              minLength: { value: 6, message: "Password must be at least 6 characters" },
+            }}
+            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              <>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your password"
+                  secureTextEntry
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+                {error && <Text style={styles.errorText}>{error.message}</Text>}
+              </>
+            )}
+          />
+
+          {/* Login Button */}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </>
   );
 };
 
