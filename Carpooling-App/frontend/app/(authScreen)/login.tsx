@@ -6,7 +6,7 @@ import { Stack } from "expo-router";
 const LogIn = () => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      email: "",
+      email: "a",
       password: "",
     },
   });
