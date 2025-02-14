@@ -56,6 +56,7 @@ const riderRegisterSchema = Joi.object({
 });
 
 userRouter.post("/signupRider", async (req, res) => {
+  console.log("agya ")
   const { error, value } = riderRegisterSchema.validate(req.body);
   if (error) return sendResponse(res, 400, null, true, error.message);
   const user = await ClientModel.findOne({ email: value.email });

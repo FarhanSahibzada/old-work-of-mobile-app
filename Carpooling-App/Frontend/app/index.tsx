@@ -1,12 +1,21 @@
 import { ThemedButton } from '../components/ThemedButton';
 import { ThemedText } from '../components/ThemedText';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { router } from 'expo-router';
-import React from 'react';
-import { View, StyleSheet, Dimensions, Image, ScrollView } from 'react-native';
+import { router, Stack, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Dimensions, Image, ScrollView, ActivityIndicator } from 'react-native';
 
-function Index() {
+function index() {
+  const router = useRouter();
+
+
   return (
+    // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    //   <ActivityIndicator size="large" color="#0000ff" />
+    // </View>
+   
+    <>
+    <Stack.Screen options={{ headerShown : false}} />
     <ScrollView contentContainerStyle={styles.container}>
       {/* App Logo */}
       <Image
@@ -16,7 +25,7 @@ function Index() {
 
       {/* Welcome Text */}
       <ThemedText style={styles.title} type="title">
-        Welcome to Sharing Rider App
+        Welcome to Car Pool App
       </ThemedText>
 
       {/* Description Text */}
@@ -28,17 +37,17 @@ function Index() {
       <View style={styles.buttonContainer}>
         <ThemedButton
           icon={<AntDesign style={styles.icon} name="user" size={24} color="white" />}
-          onPress={() => router.push('/registerRider')}
           bgColor="#28A745"
           txt="Register as Rider"
           style={styles.button}
+          onPress={()=> router.push('/(authScreen)/registerRider')}
         />
         <ThemedButton
           icon={<AntDesign style={styles.icon} name="user" size={24} color="white" />}
-          onPress={() => router.push('/registerUser')}
           bgColor="#007BFF"
           txt="Register as User"
           style={styles.button}
+          onPress={()=> router.push('/(authScreen)/registerUser')}
         />
       </View>
 
@@ -48,16 +57,18 @@ function Index() {
         <ThemedText
           style={styles.loginLink}
           type="link"
-        //   onPress={() => router.push('')}
+           onPress={() => router.push('/(authScreen)/login')}
         >
           Login here
         </ThemedText>
       </ThemedText>
     </ScrollView>
+    </> 
+    
   );
 }
 
-export default Index;
+export default index;
 
 const styles = StyleSheet.create({
   container: {
