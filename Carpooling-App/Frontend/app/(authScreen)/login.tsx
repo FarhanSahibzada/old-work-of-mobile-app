@@ -2,19 +2,26 @@ import React from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Stack } from "expo-router";
+import axios from "axios";
+import { AppRoutes } from "../constant/constant";
 
 const LogIn = () => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
-
       email: "",
       password: ""
-
     },
   });
 
-  const onSubmit = (data: { email: string; password: string }) => {
-    console.log("Login Data:", data);
+  const onSubmit = async (data: { email: string; password: string }) => {
+    try {
+      const response = await axios.post(AppRoutes.login, data);
+      if (response && response.data) {
+        console.log("successfully login ")
+      }
+    } catch (error) {
+      console.log("error sending the code ", error)
+    }
   };
 
   return (
@@ -24,7 +31,7 @@ const LogIn = () => {
         <Image source={require("@/assets/images/riderlogo.png")} style={styles.logo} />
 
 
-      <Text style={styles.title}>Welcome to Car Pool App</Text>
+        <Text style={styles.title}>Welcome to Car Pool App</Text>
 
 
         <Text style={styles.description}>
