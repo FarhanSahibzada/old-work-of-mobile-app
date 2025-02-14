@@ -3,9 +3,9 @@ const { Schema } = mongoose;
 
 const RidesSchema = new Schema(
   {
-    userID: { type: mongoose.Types.ObjectId, ref: "Users" },
-    from: { type: Number },
-    to: { type: Number },
+    userID: { type: String },
+    from: { type: String },
+    to: { type: String },
   },
   { timestamps: true }
 );
