@@ -3,54 +3,63 @@ import { ThemedText } from '../components/ThemedText';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { router, Stack, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions, Image, ScrollView, ActivityIndicator } from 'react-native';
-import { AppRoutes } from './constant/constant';
 import { useDispatch } from 'react-redux';
-import { userLogin } from '@/Store/UserAuthSlice';
+import { AppRoutes } from './constant/constant';
+import { userLogin } from '../Store/UserAuthSlice';
 
-function index() {
+function Index() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false)
-  const dispatch = useDispatch()
-  const [token, setToken] = useState('')
-
+  const [loading, setLoading] = useState(true); 
+  const dispatch = useDispatch();
+  const [token, setToken] = useState('');
 
   useEffect(() => {
-    setLoading(true)
     const getToken = async () => {
       try {
-        const token = await AsyncStorage.getItem('token');
-        if (token !== null) {
-          setToken(token)
+        const storedToken = await AsyncStorage.getItem('token');
+        if (storedToken) {
+          setToken(storedToken);
         } else {
           console.log('No token found');
+          setLoading(false);
         }
       } catch (e) {
-        console.log('Error retrieving token: ', e);
+        console.log('Error retrieving token:', e);
+        setLoading(false);
       }
     };
-    getToken()
-  }, [])
-
+    getToken();
+  }, []);
 
   useEffect(() => {
     if(token){
       setLoading(true)
       const fetchdata = async () => {
+     
         try {
-        const response = await axios.get(AppRoutes.getCurrentUser, {
-          headers : {
-            Authorization : `Bearer ${token}`
+          const response = await axios.get(AppRoutes.getCurrentUser, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (response?.data) {
+            dispatch(userLogin(response.data?.data));
+            router.push('/(tabs)/(Home)');
           }
         })
         if(response && response.data){
           const data = response.data?.data ;
+          
           dispatch(userLogin(data))
-          console.log(data)
-          router.push('/(tabs)/(Home)')
-        }
+         
+          if(data?.role === 'rider'){
+            router.push('/(Driver)/(Home)')
+            return
+          }else{
+            router.push('/(user)/(Home)')
+          } 
+         }
       } catch (error) {
         console.log("error when fetching the data ", error)
       }
@@ -58,38 +67,27 @@ function index() {
         setLoading(false)
       }
     }
-    fetchdata()
-  }
-  }, [token])
-
+  }, [token]);
 
   if (loading) {
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator size="large" color="#0000ff" />
-    </View>
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
 
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView contentContainerStyle={styles.container}>
-        {/* App Logo */}
-        <Image
-          source={require('@/assets/images/riderlogo.png')} // Replace with your app logo
-          style={styles.logo}
-        />
-
-        {/* Welcome Text */}
+        <Image source={require('@/assets/images/sharelogo.jpg')} style={styles.logo} />
         <ThemedText style={styles.title} type="title">
           Welcome to Car Pool App
         </ThemedText>
-
-        {/* Description Text */}
         <ThemedText style={styles.description} type="default">
           Join our community to share rides, save costs, and make your journey more enjoyable!
         </ThemedText>
-
-        {/* Buttons */}
         <View style={styles.buttonContainer}>
           <ThemedButton
             icon={<AntDesign style={styles.icon} name="user" size={24} color="white" />}
@@ -106,37 +104,36 @@ function index() {
             onPress={() => router.push('/(authScreen)/registerUser')}
           />
         </View>
-
-        {/* Footer Text */}
         <ThemedText style={styles.footerText} type="default">
           Already have an account?{' '}
-          <ThemedText
-            style={styles.loginLink}
-            type="link"
-            onPress={() => router.push('/(authScreen)/login')}
-          >
+          <ThemedText style={styles.loginLink} type="link" onPress={() => router.push('/(authScreen)/login')}>
             Login here
           </ThemedText>
         </ThemedText>
       </ScrollView>
     </>
-
   );
 }
 
-export default index;
+export default Index;
 
 const styles = StyleSheet.create({
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+  },
   container: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#F5F5F5', // Light background color
+    backgroundColor: '#F5F5F5',
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 220,
+    height: 220,
     resizeMode: 'contain',
     marginBottom: 20,
   },
@@ -145,20 +142,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
-    color: '#333', // Dark text color
+    color: '#333',
   },
   description: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 30,
-    color: '#666', // Medium text color
+    color: '#666',
   },
   buttonContainer: {
     width: '100%',
     alignItems: 'center',
   },
   button: {
-    width: Dimensions.get('window').width * 0.9, // 90% of screen width
+    width: Dimensions.get('window').width * 0.9,
     height: 50,
     marginVertical: 10,
     borderRadius: 10,
@@ -175,10 +172,10 @@ const styles = StyleSheet.create({
   footerText: {
     marginTop: 20,
     fontSize: 14,
-    color: '#666', // Medium text color
+    color: '#666',
   },
   loginLink: {
-    color: '#007BFF', // Link color
+    color: '#007BFF',
     fontWeight: 'bold',
   },
 });

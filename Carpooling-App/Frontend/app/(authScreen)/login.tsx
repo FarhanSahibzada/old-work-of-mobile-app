@@ -6,7 +6,9 @@ import axios from "axios";
 import { AppRoutes } from "../constant/constant";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
+
 import { userLogin } from "../../Store/UserAuthSlice.tsx";
+
 
 const LogIn = () => {
   const { control, handleSubmit } = useForm({
@@ -27,7 +29,12 @@ const LogIn = () => {
         const data = response.data.data;
         saveToken(data?.token)
         dispatch(userLogin(data?.user))
-        router.push('/(tabs)/(Home)')
+        if(data?.role === 'rider'){
+          router.push('/(Driver)/(Home)')
+          return
+        }else{
+          router.push('/(user)/(Home)')
+        } 
       }
     } catch (error) {
       console.log("error sending the code ", error)
@@ -49,7 +56,7 @@ const LogIn = () => {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView contentContainerStyle={styles.container}>
-        <Image source={require("@/assets/images/riderlogo.png")} style={styles.logo} />
+        <Image source={require("@/assets/images/sharelogo.jpg")} style={styles.logo} />
 
 
         <Text style={styles.title}>Welcome to Car Pool App</Text>
@@ -127,8 +134,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 220,
+    height: 220,
     resizeMode: "contain",
     marginBottom: 20,
   },
@@ -149,15 +156,16 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#333",
+    fontWeight: "bold",
     marginBottom: 5,
   },
   input: {
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 8,
-    padding: 12,
+    padding: 10,
     marginBottom: 15,
     backgroundColor: "#FFFFFF",
     fontSize: 16,
@@ -170,14 +178,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#007BFF",
-    padding: 15,
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: 5,
     alignItems: "center",
     marginTop: 10,
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
   loadingContainer: {
