@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { View, Text } from 'react-native'
 import React from 'react'
 import Drawer from "expo-router/drawer";
 
