@@ -27,7 +27,12 @@ const LogIn = () => {
         const data = response.data.data;
         saveToken(data?.token)
         dispatch(userLogin(data?.user))
-        router.push('/(tabs)/(Home)')
+        if(data?.role === 'rider'){
+          router.push('/(Driver)/(Home)')
+          return
+        }else{
+          router.push('/(user)/(Home)')
+        } 
       }
     } catch (error) {
       console.log("error sending the code ", error)
