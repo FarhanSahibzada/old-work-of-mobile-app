@@ -17,6 +17,8 @@ import * as ImagePicker from "expo-image-picker";
 import { Stack } from "expo-router";
 import { AppRoutes } from "../constant/constant";
 import { useRouter } from "expo-router";
+import { useDispatch } from "react-redux";
+import { userLogin } from "@/Store/UserAuthSlice";
 
 interface FormData {
   name: string;
@@ -30,6 +32,7 @@ interface FormData {
   vehicleNumber: string;
   vehicleImage: string | null;
   licenseNumber: string;
+  role? : string
 }
 
 const RegisterRider = () => {
@@ -49,8 +52,9 @@ const RegisterRider = () => {
     },
   });
   const [vehicleImage, setVehicleImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [loading , setLoading ] = useState(false)
+  const router = useRouter()
+  const dispatch = useDispatch()
 
   const pickVehicleImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -88,7 +92,13 @@ const RegisterRider = () => {
     try {
       const res = await axios.post(AppRoutes.signupRider, obj);
       if (res && res.data) {
-        router.push("/(tabs)/(Home)");
+        dispatch(userLogin(res.data.data))
+        if(data?.role === 'rider'){
+          router.push('/(Driver)/(Home)')
+          return
+        }else{
+          router.push('/(user)/(Home)')
+        }
       }
     } catch (error) {
       console.log("error when submiting the data", error);

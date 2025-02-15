@@ -35,8 +35,10 @@ function Index() {
   }, []);
 
   useEffect(() => {
-    if (token) {
-      const fetchData = async () => {
+    if(token){
+      setLoading(true)
+      const fetchdata = async () => {
+     
         try {
           const response = await axios.get(AppRoutes.getCurrentUser, {
             headers: { Authorization: `Bearer ${token}` },
@@ -45,13 +47,25 @@ function Index() {
             dispatch(userLogin(response.data?.data));
             router.push('/(tabs)/(Home)');
           }
-        } catch (error) {
-          console.log("Error fetching user data:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchData();
+        })
+        if(response && response.data){
+          const data = response.data?.data ;
+          
+          dispatch(userLogin(data))
+         
+          if(data?.role === 'rider'){
+            router.push('/(Driver)/(Home)')
+            return
+          }else{
+            router.push('/(user)/(Home)')
+          } 
+         }
+      } catch (error) {
+        console.log("error when fetching the data ", error)
+      }
+      finally{
+        setLoading(false)
+      }
     }
   }, [token]);
 

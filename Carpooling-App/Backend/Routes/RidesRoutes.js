@@ -9,8 +9,8 @@ const ridesRoutes = express.Router();
 
 ridesRoutes.post("/rider", async (req, res) => {
   try {
-    const { userID, from, to } = req.body;
-    let newRide = RidesModel({ userID, from, to });
+    const { userID, availableSeats, expense, from, to } = req.body;
+    let newRide = RidesModel({ userID, availableSeats, expense, from, to });
     newRide = await newRide.save();
     sendResponse(res, 200, newRide, false, "Ride Added Successfully");
   } catch (error) {
@@ -18,6 +18,7 @@ ridesRoutes.post("/rider", async (req, res) => {
   }
 });
 
+//for finding similar rides with gender specification
 ridesRoutes.post("/user", async (req, res) => {
   try {
     const { userID, from, to } = req.body;
@@ -32,10 +33,15 @@ ridesRoutes.post("/user", async (req, res) => {
       return sendResponse(res, 400, null, true, "No Rides Available");
     }
     const riderdata = availableRides.map((data) => data.userID);
-    const search = await ClientModel.findById(riderdata);
-    console.log(search);
-
-    sendResponse(res, 200, { availableRides, user }, false, "Rides Found");
+    const matchedRides = await ClientModel.find({
+      _id: { $in: riderdata },
+      gender: user.gender,
+    });
+    const ridersID = matchedRides.map((data) => data.id);
+    const rideExpense = await RidesModel.find({
+      userID: { $in: ridersID },
+    });
+    sendResponse(res, 200, { matchedRides, user, rideExpense }, false, "Rides Found");
   } catch (error) {
     sendResponse(res, 404, null, true, error.message);
   }
