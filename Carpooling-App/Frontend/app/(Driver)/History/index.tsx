@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Platform, View, Text } from 'react-native';
 
-export default function HomeScreen() {
+export default function HistoryScreeen() {
   return (
     <View style={{flex : 1 , justifyContent : "center" , alignItems : 'center'}}>
     <Text>
@@ -9,7 +9,6 @@ export default function HomeScreen() {
   </View>
   );
 }
-
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
