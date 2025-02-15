@@ -1,4 +1,4 @@
-const devURL = "http://192.168.7.79:4000";
+const devURL = "http://192.168.7.80:4000";
 const prodURL = "";
 
 export const BASE_URL = devURL;
