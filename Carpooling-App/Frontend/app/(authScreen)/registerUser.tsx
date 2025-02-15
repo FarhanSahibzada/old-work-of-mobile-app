@@ -6,6 +6,8 @@ import { Stack, useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { AppRoutes } from "../constant/constant";
+import { useDispatch } from "react-redux";
+import { userLogin } from "@/Store/UserAuthSlice";
 
 export interface FormData {
   name: string;
@@ -14,6 +16,7 @@ export interface FormData {
   password: string;
   address: string;
   gender: string;
+  role?: string
 }
 
 
@@ -29,15 +32,22 @@ const RegisterUser = () => {
     },
   });
   const router = useRouter()
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
-    let formData = { ...data, role:"user" };
+    let formData = { ...data, role: "user" };
     try {
       const response = await axios.post(AppRoutes.signupUser, formData)
       if (response) {
-        router.push('/(tabs)/(Home)')
+        dispatch(userLogin(response.data?.data))
+        if (data?.role === 'rider') {
+          router.push('/(Driver)/(Home)')
+          return
+        } else {
+          router.push('/(user)/(Home)')
+        }
       }
     } catch (error) {
       console.log("error when sending the data in backend ", error)
@@ -47,13 +57,13 @@ const RegisterUser = () => {
   };
 
 
-   if(loading){
-      return (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size={'large'} />
-        </View>
-      )
-    }
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size={'large'} />
+      </View>
+    )
+  }
 
 
   return (
@@ -246,10 +256,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  loadingContainer : {
-    flex : 1,
-    justifyContent : "center",
-    alignItems : "center"
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 

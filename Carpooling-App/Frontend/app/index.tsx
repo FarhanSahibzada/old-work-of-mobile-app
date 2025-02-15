@@ -39,6 +39,7 @@ function index() {
     if(token){
       setLoading(true)
       const fetchdata = async () => {
+     
         try {
         const response = await axios.get(AppRoutes.getCurrentUser, {
           headers : {
@@ -47,10 +48,16 @@ function index() {
         })
         if(response && response.data){
           const data = response.data?.data ;
+          
           dispatch(userLogin(data))
-          console.log(data)
-          router.push('/(tabs)/(Home)')
-        }
+         
+          if(data?.role === 'rider'){
+            router.push('/(Driver)/(Home)')
+            return
+          }else{
+            router.push('/(user)/(Home)')
+          } 
+         }
       } catch (error) {
         console.log("error when fetching the data ", error)
       }
