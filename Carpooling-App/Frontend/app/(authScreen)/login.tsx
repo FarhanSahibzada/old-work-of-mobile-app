@@ -6,7 +6,9 @@ import axios from "axios";
 import { AppRoutes } from "../constant/constant";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { userLogin } from "../../Store/UserAuthSlice";
+
+import { userLogin } from "../../Store/UserAuthSlice.tsx";
+
 
 const LogIn = () => {
   const { control, handleSubmit } = useForm({
