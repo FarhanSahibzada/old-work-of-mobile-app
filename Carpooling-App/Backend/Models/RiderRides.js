@@ -3,9 +3,11 @@ const { Schema } = mongoose;
 
 const RidesSchema = new Schema(
   {
-    userID: { type: String },
-    from: { type: String },
-    to: { type: String },
+    userID: { type: String, required: true },
+    availableSeats: { type: String },
+    expense : {type : String},
+    from: { type: String, required: true },
+    to: { type: String, required: true },
   },
   { timestamps: true }
 );
