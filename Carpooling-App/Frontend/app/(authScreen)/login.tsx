@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import axios from "axios";
 import { AppRoutes } from "../constant/constant";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { userLogin } from "@/Store/UserAuthSlice";
 
 const LogIn = () => {
   const { control, handleSubmit } = useForm({
@@ -12,17 +15,35 @@ const LogIn = () => {
       password: ""
     },
   });
+  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const dispatch = useDispatch()
 
   const onSubmit = async (data: { email: string; password: string }) => {
+    setLoading(true)
     try {
       const response = await axios.post(AppRoutes.login, data);
       if (response && response.data) {
-        console.log("successfully login ")
+        const data = response.data.data;
+        saveToken(data?.token)
+        dispatch(userLogin(data?.user))
+        router.push('/(tabs)/(Home)')
       }
     } catch (error) {
       console.log("error sending the code ", error)
     }
+    finally {
+      setLoading(false)
+    }
   };
+
+  const saveToken = async (token: string) => {
+    try {
+      await AsyncStorage.setItem('token', token)
+    } catch (error) {
+      console.log("error saving the data ", error)
+    }
+  }
 
   return (
     <>
@@ -159,6 +180,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  }
 });
 
 export default LogIn;

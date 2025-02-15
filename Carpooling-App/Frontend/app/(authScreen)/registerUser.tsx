@@ -1,20 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Alert, StyleSheet, ActivityIndicator } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useForm, Controller } from "react-hook-form";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { AppRoutes } from "../constant/constant";
 
-interface FormData {
+export interface FormData {
   name: string;
-  contact: string;
+  phoneNumber: string;
   email: string;
   password: string;
   address: string;
   gender: string;
-  nicNo: string
 }
 
 
@@ -22,28 +21,40 @@ const RegisterUser = () => {
   const { control, handleSubmit, reset, formState: { isValid, errors } } = useForm<FormData>({
     defaultValues: {
       name: "",
-      contact: "",
+      phoneNumber: "",
       email: "",
       password: "",
       address: "",
       gender: "",
     },
   });
-
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   const onSubmit = async (data: FormData) => {
-    console.log(data)
-    let formData = { ...data};
+    setLoading(true)
+    let formData = { ...data, role:"user" };
     try {
-      const response = await axios.post(AppRoutes.signupUser , formData)
-      if(response && response.data){
-        console.log("successful done");
-        console.log(response.data)
+      const response = await axios.post(AppRoutes.signupUser, formData)
+      if (response) {
+        router.push('/(tabs)/(Home)')
       }
     } catch (error) {
-      console.log("error when sending the data in backend " , error)
+      console.log("error when sending the data in backend ", error)
+    } finally {
+      setLoading(false)
     }
   };
+
+
+   if(loading){
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size={'large'} />
+        </View>
+      )
+    }
+
 
   return (
     <>
@@ -78,7 +89,7 @@ const RegisterUser = () => {
           />
 
           <Text style={styles.label}>Contact No</Text>
-          <Controller control={control} name="contact" rules={{ required: "Contact is required" }}
+          <Controller control={control} name="phoneNumber" rules={{ required: "phone Number is required" }}
             render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
               <>
                 <TextInput style={styles.input} onChangeText={onChange} onBlur={onBlur} value={value} placeholder="Enter your contact" keyboardType="numeric" />
@@ -108,20 +119,26 @@ const RegisterUser = () => {
           <Text style={styles.label}>Gender</Text>
           <Controller
             control={control} name="gender" rules={{ required: "gender is required" }}
-            render={({ field: { onChange, value, } })=>(
+            render={({ field: { onChange, value, } }) => (
               <View style={styles.picker}>
-              <Picker selectedValue={value} onValueChange={onChange}  style={{ height: 50, width: "100%" }}>
-                <Picker.Item label="Select Gender" value="" />
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Female" value="Female" />
-              </Picker>
+                <Picker selectedValue={value} onValueChange={onChange} style={{ height: 50, width: "100%" }}>
+                  <Picker.Item label="Select Gender" value="" />
+                  <Picker.Item label="Male" value="Male" />
+                  <Picker.Item label="Female" value="Female" />
+                </Picker>
               </View>
-              )}
+            )}
           />
 
 
           {/* Register Button */}
-          <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.registerButton} disabled={!isValid}>
+          <TouchableOpacity onPress={handleSubmit(onSubmit, (errors) => {
+            console.log("erros", errors)
+            if (Object.keys(errors).length > 0) {
+              Alert.alert("Validation Error", "Please fill all required fields.");
+            }
+          })}
+            style={styles.registerButton}>
             <Text style={styles.registerButtonText}>Register</Text>
           </TouchableOpacity>
         </View>
@@ -151,11 +168,11 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
   },
-  picker : {
-    borderWidth : 2 ,
-    borderColor : "#28A745",
-     borderRadius: 8,
-     marginBottom: 10 
+  picker: {
+    borderWidth: 2,
+    borderColor: "#28A745",
+    borderRadius: 8,
+    marginBottom: 10
   },
   label: {
     fontSize: 16,
@@ -229,6 +246,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  loadingContainer : {
+    flex : 1,
+    justifyContent : "center",
+    alignItems : "center"
+  }
 });
 
 
