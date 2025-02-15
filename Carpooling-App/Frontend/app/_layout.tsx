@@ -1,3 +1,4 @@
+import React from 'react'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -8,7 +9,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '../hooks/useColorScheme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
-import store from '@/Store/Store';
+import store from '../Store/Store';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
