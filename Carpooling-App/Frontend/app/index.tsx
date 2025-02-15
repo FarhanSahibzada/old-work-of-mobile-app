@@ -1,70 +1,126 @@
 import { ThemedButton } from '../components/ThemedButton';
 import { ThemedText } from '../components/ThemedText';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { router, Stack, useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { AppRoutes } from './constant/constant';
+import { useDispatch } from 'react-redux';
+import { userLogin } from '@/Store/UserAuthSlice';
 
 function index() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch()
+  const [token, setToken] = useState('')
 
+
+  useEffect(() => {
+    setLoading(true)
+    const getToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token !== null) {
+          setToken(token)
+        } else {
+          console.log('No token found');
+        }
+      } catch (e) {
+        console.log('Error retrieving token: ', e);
+      }
+    };
+    getToken()
+  }, [])
+
+
+  useEffect(() => {
+    if(token){
+      setLoading(true)
+      const fetchdata = async () => {
+        try {
+        const response = await axios.get(AppRoutes.getCurrentUser, {
+          headers : {
+            Authorization : `Bearer ${token}`
+          }
+        })
+        if(response && response.data){
+          const data = response.data?.data ;
+          dispatch(userLogin(data))
+          console.log(data)
+          router.push('/(tabs)/(Home)')
+        }
+      } catch (error) {
+        console.log("error when fetching the data ", error)
+      }
+      finally{
+        setLoading(false)
+      }
+    }
+    fetchdata()
+  }
+  }, [token])
+
+
+  if (loading) {
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" color="#0000ff" />
+    </View>
+  }
 
   return (
-    // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    //   <ActivityIndicator size="large" color="#0000ff" />
-    // </View>
-   
     <>
-    <Stack.Screen options={{ headerShown : false}} />
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* App Logo */}
-      <Image
-        source={require('@/assets/images/riderlogo.png')} // Replace with your app logo
-        style={styles.logo}
-      />
-
-      {/* Welcome Text */}
-      <ThemedText style={styles.title} type="title">
-        Welcome to Car Pool App
-      </ThemedText>
-
-      {/* Description Text */}
-      <ThemedText style={styles.description} type="default">
-        Join our community to share rides, save costs, and make your journey more enjoyable!
-      </ThemedText>
-
-      {/* Buttons */}
-      <View style={styles.buttonContainer}>
-        <ThemedButton
-          icon={<AntDesign style={styles.icon} name="user" size={24} color="white" />}
-          bgColor="#28A745"
-          txt="Register as Rider"
-          style={styles.button}
-          onPress={()=> router.push('/(authScreen)/registerRider')}
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* App Logo */}
+        <Image
+          source={require('@/assets/images/riderlogo.png')} // Replace with your app logo
+          style={styles.logo}
         />
-        <ThemedButton
-          icon={<AntDesign style={styles.icon} name="user" size={24} color="white" />}
-          bgColor="#007BFF"
-          txt="Register as User"
-          style={styles.button}
-          onPress={()=> router.push('/(authScreen)/registerUser')}
-        />
-      </View>
 
-      {/* Footer Text */}
-      <ThemedText style={styles.footerText} type="default">
-        Already have an account?{' '}
-        <ThemedText
-          style={styles.loginLink}
-          type="link"
-           onPress={() => router.push('/(authScreen)/login')}
-        >
-          Login here
+        {/* Welcome Text */}
+        <ThemedText style={styles.title} type="title">
+          Welcome to Car Pool App
         </ThemedText>
-      </ThemedText>
-    </ScrollView>
-    </> 
-    
+
+        {/* Description Text */}
+        <ThemedText style={styles.description} type="default">
+          Join our community to share rides, save costs, and make your journey more enjoyable!
+        </ThemedText>
+
+        {/* Buttons */}
+        <View style={styles.buttonContainer}>
+          <ThemedButton
+            icon={<AntDesign style={styles.icon} name="user" size={24} color="white" />}
+            bgColor="#28A745"
+            txt="Register as Rider"
+            style={styles.button}
+            onPress={() => router.push('/(authScreen)/registerRider')}
+          />
+          <ThemedButton
+            icon={<AntDesign style={styles.icon} name="user" size={24} color="white" />}
+            bgColor="#007BFF"
+            txt="Register as User"
+            style={styles.button}
+            onPress={() => router.push('/(authScreen)/registerUser')}
+          />
+        </View>
+
+        {/* Footer Text */}
+        <ThemedText style={styles.footerText} type="default">
+          Already have an account?{' '}
+          <ThemedText
+            style={styles.loginLink}
+            type="link"
+            onPress={() => router.push('/(authScreen)/login')}
+          >
+            Login here
+          </ThemedText>
+        </ThemedText>
+      </ScrollView>
+    </>
+
   );
 }
 

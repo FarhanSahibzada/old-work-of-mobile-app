@@ -21,12 +21,13 @@ const userRegisterSchema = Joi.object({
   gender: Joi.string().min(3).max(30).required(),
   phoneNumber: Joi.number(),
   address: Joi.string().min(10).max(50).required(),
-  profileImage: Joi.string().min(10).max(50).required(),
+  role : Joi.string()
+  // profileImage: Joi.string().min(10).max(50).required(),
 });
 
 userRouter.post("/signupUser", async (req, res) => {
   const { error, value } = userRegisterSchema.validate(req.body);
-  if (error) return sendResponse(res, 400, null, true, error.message);
+  if (error) return sendResponse(res, 400, null, true, error.message ,);
   const user = await ClientModel.findOne({ email: value.email });
   if (user) return sendResponse(res, 404, null, true, "User Already Taken");
   const hashedPass = await bcrypt.hash(value.password, 12);
