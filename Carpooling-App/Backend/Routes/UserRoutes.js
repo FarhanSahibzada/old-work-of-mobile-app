@@ -22,6 +22,7 @@ const userRegisterSchema = Joi.object({
   phoneNumber: Joi.number(),
   address: Joi.string().min(10).max(50).required(),
   profileImage: Joi.string().min(10).max(50).required(),
+  role: Joi.string().required(),
 });
 
 userRouter.post("/signupUser", async (req, res) => {
@@ -56,7 +57,6 @@ const riderRegisterSchema = Joi.object({
 });
 
 userRouter.post("/signupRider", async (req, res) => {
-  console.log("agya ");
   const { error, value } = riderRegisterSchema.validate(req.body);
   if (error) return sendResponse(res, 400, null, true, error.message);
   const user = await ClientModel.findOne({ email: value.email });
