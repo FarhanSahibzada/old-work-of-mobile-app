@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { AppRoutes } from './constant/constant';
 import { useDispatch } from 'react-redux';
-import { userLogin } from '@/Store/UserAuthSlice';
+import { userLogin } from '../Store/UserAuthSlice';
 
 function index() {
   const router = useRouter();
