@@ -12,7 +12,7 @@ import { userLogin } from '../Store/UserAuthSlice';
 
 function Index() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const [token, setToken] = useState('');
 
@@ -29,16 +29,16 @@ function Index() {
       } catch (e) {
         console.log('Error retrieving token:', e);
         setLoading(false);
+      }finally{
+        setLoading(false)
       }
     };
     getToken();
   }, []);
 
   useEffect(() => {
-    if(token){
-      setLoading(true)
+    if (token) {
       const fetchdata = async () => {
-     
         try {
           const response = await axios.get(AppRoutes.getCurrentUser, {
             headers: { Authorization: `Bearer ${token}` },
@@ -47,7 +47,6 @@ function Index() {
           const data = response.data?.data ;
           console.log(data)
           dispatch(userLogin(data))
-         
           if(data?.role === 'rider'){
             router.push('/(Driver)/(Home)')
             return
@@ -63,9 +62,27 @@ function Index() {
       }
       };
       fetchdata();
+          if (response && response.data) {
+            const data = response.data?.data;
+            dispatch(userLogin(data))
+            if (data?.role === 'rider') {
+              router.push('/(Driver)/(Home)')
+              return
+            } else {
+              router.push('/(user)/(Home)')
+            }
+          }
+        }
+        catch (error) {
+          console.log("error when fetching the data ", error)
+        }
+        finally {
+          setLoading(false)
+        }
+      }
+      fetchdata()
     }
-  }, [token]);
-
+  }, [token])
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -73,7 +90,6 @@ function Index() {
       </View>
     );
   }
-
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -111,9 +127,7 @@ function Index() {
     </>
   );
 }
-
 export default Index;
-
 const styles = StyleSheet.create({
   loaderContainer: {
     flex: 1,

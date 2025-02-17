@@ -7,7 +7,7 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { AppRoutes } from "../constant/constant";
 import { useDispatch } from "react-redux";
-import { userLogin } from "@/Store/UserAuthSlice";
+import { userLogin } from "../../Store/UserAuthSlice";
 
 export interface FormData {
   name: string;

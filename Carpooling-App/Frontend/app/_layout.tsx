@@ -34,9 +34,9 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
         <Provider store={store}>
-        <Stack>
+        <Stack screenOptions={{headerShown : false}}>
           <Stack.Screen name="(authScreen)" options={{ headerShown : false}} />
-          <Stack.Screen name="(user)" options={{ headerShown: false }} />
+          <Stack.Screen name="(user)" options={{ headerShown : false}} />
           <Stack.Screen name="(Driver)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
