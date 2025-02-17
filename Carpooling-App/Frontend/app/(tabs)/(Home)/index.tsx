@@ -10,7 +10,7 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
   headerImage: {
     color: '#808080',
     bottom: -90,
