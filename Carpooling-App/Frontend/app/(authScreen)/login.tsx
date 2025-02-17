@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert, ActivityIndicator } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Stack, useRouter } from "expo-router";
 import axios from "axios";
@@ -10,8 +10,9 @@ import { useDispatch } from "react-redux";
 import { userLogin } from "../../Store/UserAuthSlice.tsx";
 
 
+
 const LogIn = () => {
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit , reset } = useForm({
     defaultValues: {
       email: "",
       password: ""
@@ -38,6 +39,17 @@ const LogIn = () => {
       }
     } catch (error) {
       console.log("error sending the code ", error)
+    Alert.alert(
+      'Invalid Input',
+      'Please correct the password and gmail',
+      [
+        {
+          text: 'ok',
+          onPress : () => reset()
+          
+        }
+      ]
+    )
     }
     finally {
       setLoading(false)
@@ -50,6 +62,15 @@ const LogIn = () => {
     } catch (error) {
       console.log("error saving the data ", error)
     }
+  }
+
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size={"large"} />
+      </View>
+    );
   }
 
   return (
@@ -98,7 +119,7 @@ const LogIn = () => {
             name="password"
             rules={{
               required: "Password is required",
-              minLength: { value: 6, message: "Password must be at least 6 characters" },
+              minLength: { value: 8, message: "Password must be at least 8 characters" },
             }}
             render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
               <>

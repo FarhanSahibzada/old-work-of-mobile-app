@@ -1,4 +1,4 @@
-const devURL = "http://192.168.7.80:4000";
+const devURL = "http://192.168.7.79:4000";
 const prodURL = "";
 
 export const BASE_URL = devURL;
@@ -9,4 +9,5 @@ export const AppRoutes = {
   login: BASE_URL + "/user/login",
   getAllUser: BASE_URL + "/user/allUsers",
   getCurrentUser: BASE_URL + "/user/currentUser",
+  SendRideData : BASE_URL + '/rides/user',
 };

@@ -18,7 +18,7 @@ import { Stack } from "expo-router";
 import { AppRoutes } from "../constant/constant";
 import { useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
-import { userLogin } from "@/Store/UserAuthSlice";
+import { userLogin } from "../../Store/UserAuthSlice";
 
 interface FormData {
   name: string;
@@ -84,7 +84,7 @@ const RegisterRider = () => {
       profileImage: "https://cdn-icons-png.flaticon.com/512/6858/6858504.png",
       nicNo: formDataWithImage.cnic,
       vehicleCategory: formDataWithImage.vehicleType,
-      vehicleNo: formDataWithImage.vehicleType,
+      vehicleNo: formDataWithImage.vehicleNumber,
       licenseNo: "ked-0987",
       vehicleImage: "https://i.dawn.com/primary/2022/05/6293d74452150.jpg",
       role: "rider",
