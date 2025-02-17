@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, ActivityIndicator } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Stack, useRouter } from "expo-router";
 import axios from "axios";
@@ -55,11 +55,7 @@ const LogIn = () => {
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView contentContainerStyle={styles.container}>
         <Image source={require("@/assets/images/sharelogo.jpg")} style={styles.logo} />
-
-
         <Text style={styles.title}>Welcome to Car Pool App</Text>
-
-
         <Text style={styles.description}>
           Join our community to share rides, save costs, and make your journey more enjoyable!
         </Text>
@@ -113,9 +109,13 @@ const LogIn = () => {
             )}
           />
 
-          {/* Login Button */}
-          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.buttonText}>Login</Text>
+          {/* Login Button with Loading Indicator */}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Login</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>

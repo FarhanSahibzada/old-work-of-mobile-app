@@ -15,10 +15,8 @@ export default function HomeScreen() {
   });
 
   return (
+    <>
     <View style={{flex : 1 , justifyContent : "center" , alignItems : 'center'}}>
-      <Text>
-       user home Screen
-      </Text>
     <View style={styles.container}>
       
       {/* Navbar */}
@@ -95,6 +93,8 @@ export default function HomeScreen() {
 
       </View>   
     </View>
+    </View>
+    </>
   );
 }
  

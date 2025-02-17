@@ -43,14 +43,9 @@ function Index() {
           const response = await axios.get(AppRoutes.getCurrentUser, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          if (response?.data) {
-            dispatch(userLogin(response.data?.data));
-            router.push('/(tabs)/(Home)');
-          }
-        })
-        if(response && response.data){
+        if (response && response.data) {
           const data = response.data?.data ;
-          
+          console.log(data)
           dispatch(userLogin(data))
          
           if(data?.role === 'rider'){
@@ -66,6 +61,8 @@ function Index() {
       finally{
         setLoading(false)
       }
+      };
+      fetchdata();
     }
   }, [token]);
 
