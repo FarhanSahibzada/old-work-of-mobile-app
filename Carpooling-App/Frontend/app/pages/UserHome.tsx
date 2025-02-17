@@ -46,7 +46,6 @@ const rideData = [
 
 function UserHome() {
 
-
   const genderVarify = "Male";
 
   const filterRide = rideData.filter((userGender)=> userGender.gender === genderVarify)

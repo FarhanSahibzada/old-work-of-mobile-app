@@ -84,6 +84,76 @@ export default function HomeScreen() {
 
   return (
     <>
+    <View style={{flex : 1 , justifyContent : "center" , alignItems : 'center'}}>
+    <View style={styles.container}>
+      {/* Navbar */}
+      <View style={styles.navbar}>
+        <TouchableOpacity style={styles.menuButton}>
+          <Ionicons name="menu" size={30} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.navTitle}>Car Sharing</Text>
+        <TouchableOpacity>
+          <Image 
+            source={{ uri: 'https://via.placeholder.com/40' }} // Replace with user image URL
+            style={styles.userImage} 
+          />
+        </TouchableOpacity>
+      </View>
+      {/* Map View */}
+      <MapView 
+        style={styles.map}
+        initialRegion={{
+          latitude: pickup.latitude,
+          longitude: pickup.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }}
+      >
+        <Marker coordinate={pickup} title="Pickup Location" />
+        <Marker coordinate={destination} title="Destination" pinColor="blue" />
+      </MapView>
+      {/* Bottom UI Section */}
+      <View style={styles.bottomContainer}>
+        {/* Pickup Input */}
+        <View style={styles.inputWrapper}>
+          <MaterialIcons name="my-location" size={20} color="gray" />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter pickup location"
+            onChangeText={(text) => setPickup({ ...pickup, latitude: parseFloat(text) })}
+          />
+        </View>
+        {/* Destination Input */}
+        <View style={styles.inputWrapper}>
+          <MaterialIcons name="location-on" size={20} color="red" />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter destination"
+            onChangeText={(text) => setDestination({ ...destination, latitude: parseFloat(text) })}
+          />
+        </View>
+        {/* Ride Sharing Options */}
+        <View style={styles.rideOptions}>
+          <TouchableOpacity style={styles.rideButton}>
+            <Ionicons name="car-outline" size={24} color="black" />
+            <Text style={styles.rideText}>Book a Ride</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.rideButton}>
+            <Ionicons name="add-circle-outline" size={24} color="black" />
+            <Text style={styles.rideText}>Offer a Ride</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.rideButton}>
+            <Ionicons name="location-outline" size={24} color="black" />
+            <Text style={styles.rideText}>Nearby Rides</Text>
+          </TouchableOpacity>
+        </View>
+        {/* Confirm Ride Button */}
+        <TouchableOpacity style={styles.confirmButton}>
+          <Text style={styles.confirmText}>Search for Rides</Text>
+        </TouchableOpacity>
+      </View>   
+    </View>
+    </View>
       <View style={{ flex: 1, justifyContent: "center", alignItems: 'center', backgroundColor: 'white' }}>
         <View style={styles.container}>
           {/* Map View */}
@@ -105,13 +175,11 @@ export default function HomeScreen() {
               )}
             </MapView>
           </View>
-
           {/* Bottom UI Section */}
           <View style={styles.bottomContainer}>
             <TouchableOpacity style={styles.rideButton}>
               <Text style={styles.rideText}>Book a Ride</Text>
             </TouchableOpacity>
-
             <View style={styles.inputWrapper}>
               <MaterialIcons name="my-location" size={20} color="gray" />
               <TextInput
@@ -121,16 +189,13 @@ export default function HomeScreen() {
                 onChangeText={(text) => setCurrentLocationText(text)}
               />
             </View>
-
             <View style={styles.inputWrapper}>
               <MaterialIcons name="location-on" size={20} color="red" />
               <TextInput
                 style={styles.input}
                 placeholder="Enter destination"
-                onChangeText={(text) => setDestinationText(text)}
-              />
+                onChangeText={(text) => setDestinationText(text)}/>
             </View>
-
             {/* Ride Sharing Options */}
             <View style={styles.rideOptions}>
               {/* <TouchableOpacity style={styles.rideButton}>
@@ -146,22 +211,17 @@ export default function HomeScreen() {
                 <Text style={styles.rideText}>Nearby Rides</Text>
               </TouchableOpacity> */}
             </View>
-
             {/* Confirm Ride Button */}
             <TouchableOpacity style={styles.confirmButton}
-              onPress={() => confirmRide()}
-            >
+              onPress={() => confirmRide()}>
               <Text style={styles.confirmText}>Confirm Ride</Text>
             </TouchableOpacity>
-
           </View>
         </View>
       </View >
     </>
   );
 }
-
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   userImage: {
@@ -169,8 +229,6 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
   },
-
-
   bottomContainer: {
     marginTop: 4,
     padding: 16,
@@ -179,7 +237,6 @@ const styles = StyleSheet.create({
     // elevation: 5,
     borderRadius: 15,
   },
-
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -190,31 +247,26 @@ const styles = StyleSheet.create({
     height: 45,
     marginBottom: 10,
   },
-
   input: {
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
   },
-
   rideOptions: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 10,
     gap: 4,
   },
-
   rideButton: {
     borderRadius: 10,
   },
-
   rideText: {
     color: "#1E88E5",
     fontSize: 22,
     fontWeight: "500",
     marginBottom: 10,
   },
-
   confirmButton: {
     backgroundColor: '#1E88E5',
     paddingVertical: 12,
@@ -222,7 +274,6 @@ const styles = StyleSheet.create({
     marginTop: 25,
     alignItems: 'center',
   },
-
   confirmText: {
     color: 'white',
     fontSize: 18,

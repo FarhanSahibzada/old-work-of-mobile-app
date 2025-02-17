@@ -43,6 +43,25 @@ function Index() {
           const response = await axios.get(AppRoutes.getCurrentUser, {
             headers: { Authorization: `Bearer ${token}` },
           });
+        if (response && response.data) {
+          const data = response.data?.data ;
+          console.log(data)
+          dispatch(userLogin(data))
+          if(data?.role === 'rider'){
+            router.push('/(Driver)/(Home)')
+            return
+          }else{
+            router.push('/(user)/(Home)')
+          } 
+         }
+      } catch (error) {
+        console.log("error when fetching the data ", error)
+      }
+      finally{
+        setLoading(false)
+      }
+      };
+      fetchdata();
           if (response && response.data) {
             const data = response.data?.data;
             dispatch(userLogin(data))
@@ -64,7 +83,6 @@ function Index() {
       fetchdata()
     }
   }, [token])
-
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -72,7 +90,6 @@ function Index() {
       </View>
     );
   }
-
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -110,9 +127,7 @@ function Index() {
     </>
   );
 }
-
 export default Index;
-
 const styles = StyleSheet.create({
   loaderContainer: {
     flex: 1,
