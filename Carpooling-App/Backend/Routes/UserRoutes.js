@@ -27,7 +27,7 @@ const userRegisterSchema = Joi.object({
 
 userRouter.post("/signupUser", async (req, res) => {
   const { error, value } = userRegisterSchema.validate(req.body);
-  if (error) return sendResponse(res, 400, null, true, error.message ,);
+  if (error) return sendResponse(res, 400, null, true, error.message);
   const user = await ClientModel.findOne({ email: value.email });
   if (user) return sendResponse(res, 404, null, true, "User Already Taken");
   const hashedPass = await bcrypt.hash(value.password, 12);
@@ -97,7 +97,7 @@ userRouter.post("/login", async (req, res) => {
   var token = jwt.sign(
     { id: user._id, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    // { expiresIn: "24h" }
   );
 
   return sendResponse(
@@ -122,19 +122,65 @@ userRouter.get("/currentUser", verifyToken, async (req, res) => {
   }
 });
 
+
+// to get All user data
 userRouter.get("/allUsers", async (req, res) => {
   try {
-    const allUsers = await ClientModel.find().select("-password -address");
+    const allUsers = await ClientModel.find().select("-password");
 
     if (allUsers.length === 0) {
       return sendResponse(res, 404, null, true, "No users found.");
     }
 
-    console.log("All Users from DB:", allUsers);
     sendResponse(res, 200, allUsers, false, "Fetched Data Successfully");
   } catch (error) {
     console.error("Error fetching users:", error);
     sendResponse(res, 500, null, true, "Internal Server Error");
+  }
+});
+
+
+//For fetching All Drivers
+userRouter.get("/allDrivers", async (req, res) => {
+  try {
+    const allDrivers = await ClientModel.find({ role: "driver" }).select(
+      "-password"
+    );
+    if (allDrivers.length === 0) {
+      return sendResponse(res, 404, null, true, "No drivers found.");
+    }
+    sendResponse(res, 200, allDrivers, false, "Drivers Fetched Successfully");
+  } catch (error) {
+    console.error("Error fetching drivers:", error.message);
+    sendResponse(res, 400, null, true, "Internal Server Error");
+
+// delete user API
+userRouter.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedUser = await ClientModel.findByIdAndDelete(id);
+    if (!updatedUser) {
+      return sendResponse(res, 404, null, true, " Not found");
+    }
+    sendResponse(res, 200, null, false, "Deleted successfully");
+  } catch (error) {
+    sendResponse(res, 500, null, true, error.message);
+  }
+});
+
+// Edit user API
+userRouter.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedUser = await ClientModel.findByIdAndUpdate(id, req.body, { new: true });
+
+
+    if (!updatedUser) {
+      return sendResponse(res, 404, null, true, " Not found");
+    }
+    sendResponse(res, 200, null, false, "Data Edit successfully");
+  } catch (error) {
+    sendResponse(res, 500, null, true, error.message);
   }
 });
 

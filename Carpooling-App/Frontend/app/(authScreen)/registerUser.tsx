@@ -7,7 +7,7 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { AppRoutes } from "../constant/constant";
 import { useDispatch } from "react-redux";
-import { userLogin } from "@/Store/UserAuthSlice";
+import { userLogin } from "../../Store/UserAuthSlice";
 
 export interface FormData {
   name: string;
@@ -141,7 +141,6 @@ const RegisterUser = () => {
           />
 
 
-          {/* Register Button */}
           <TouchableOpacity onPress={handleSubmit(onSubmit, (errors) => {
             console.log("erros", errors)
             if (Object.keys(errors).length > 0) {
@@ -158,18 +157,17 @@ const RegisterUser = () => {
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 7,
     backgroundColor: "#F5F5F5",
   },
   formContainer: {
     width: "100%",
-    padding: 20,
+    padding: 15,
     backgroundColor: "#FFF",
     borderRadius: 12,
     shadowColor: "#000",
@@ -180,25 +178,23 @@ const styles = StyleSheet.create({
   },
   picker: {
     borderWidth: 2,
-    borderColor: "#28A745",
+    borderColor: "#ccc",
     borderRadius: 8,
-    marginBottom: 10
   },
   label: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
   },
   input: {
     width: "100%",
-    height: 50,
     borderWidth: 1,
     borderColor: "#DDD",
     borderRadius: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     backgroundColor: "#FFF",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   errorText: {
     color: "red",
@@ -226,34 +222,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFF",
   },
-  imagePickerButton: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  imagePickerText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-    marginTop: 10,
-  },
   registerButton: {
     backgroundColor: "#28A745",
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 10,
+    borderRadius: 5,
     alignItems: "center",
     marginTop: 15,
   },
   registerButtonText: {
     color: "#FFF",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
   },
   loadingContainer: {

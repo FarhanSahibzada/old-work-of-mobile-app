@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert, ActivityIndicator } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Stack, useRouter } from "expo-router";
 import axios from "axios";
 import { AppRoutes } from "../constant/constant";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { userLogin } from "@/Store/UserAuthSlice";
+
+import { userLogin } from "../../Store/UserAuthSlice.tsx";
+
+
 
 const LogIn = () => {
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit , reset } = useForm({
     defaultValues: {
       email: "",
       password: ""
@@ -36,6 +39,17 @@ const LogIn = () => {
       }
     } catch (error) {
       console.log("error sending the code ", error)
+    Alert.alert(
+      'Invalid Input',
+      'Please correct the password and gmail',
+      [
+        {
+          text: 'ok',
+          onPress : () => reset()
+          
+        }
+      ]
+    )
     }
     finally {
       setLoading(false)
@@ -50,16 +64,21 @@ const LogIn = () => {
     }
   }
 
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size={"large"} />
+      </View>
+    );
+  }
+
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView contentContainerStyle={styles.container}>
-        <Image source={require("@/assets/images/riderlogo.png")} style={styles.logo} />
-
-
+        <Image source={require("@/assets/images/sharelogo.jpg")} style={styles.logo} />
         <Text style={styles.title}>Welcome to Car Pool App</Text>
-
-
         <Text style={styles.description}>
           Join our community to share rides, save costs, and make your journey more enjoyable!
         </Text>
@@ -96,7 +115,7 @@ const LogIn = () => {
             name="password"
             rules={{
               required: "Password is required",
-              minLength: { value: 6, message: "Password must be at least 6 characters" },
+              minLength: { value: 8, message: "Password must be at least 8 characters" },
             }}
             render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
               <>
@@ -113,9 +132,13 @@ const LogIn = () => {
             )}
           />
 
-          {/* Login Button */}
-          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.buttonText}>Login</Text>
+          {/* Login Button with Loading Indicator */}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Login</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -132,8 +155,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 220,
+    height: 220,
     resizeMode: "contain",
     marginBottom: 20,
   },
@@ -154,15 +177,16 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#333",
+    fontWeight: "bold",
     marginBottom: 5,
   },
   input: {
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 8,
-    padding: 12,
+    padding: 10,
     marginBottom: 15,
     backgroundColor: "#FFFFFF",
     fontSize: 16,
@@ -175,14 +199,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#007BFF",
-    padding: 15,
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: 5,
     alignItems: "center",
     marginTop: 10,
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
   loadingContainer: {

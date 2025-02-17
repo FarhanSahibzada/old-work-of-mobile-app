@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Stack } from 'expo-router'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import Drivelist from '@/components/Drivelist';
+import Drivelist from '../../components/Drivelist';
 import { Entypo } from '@expo/vector-icons';
 
 export type driverTrips = {
