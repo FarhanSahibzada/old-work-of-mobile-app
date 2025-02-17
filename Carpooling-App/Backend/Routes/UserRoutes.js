@@ -81,16 +81,16 @@ const loginSchema = Joi.object({
 
 userRouter.post("/login", async (req, res) => {
   const { error, value } = loginSchema.validate(req.body);
-  if (error) return sendResponse(res, 400, null, true, error.message);
+  if (error) return sendResponse(res, 40, null, true, error.message);
 
   const user = await ClientModel.findOne({ email: value.email }).lean();
   if (!user) {
-    return sendResponse(res, 400, null, true, "User Not Found");
+    return sendResponse(res, 401, null, true, "User Not Found");
   }
 
   const isPasswordValid = await bcrypt.compare(value.password, user.password);
   if (!isPasswordValid) {
-    return sendResponse(res, 400, null, true, "Incorrect Password");
+    return sendResponse(res, 403, null, true, "Incorrect Password");
   }
 
   // Generating token with only necessary fields
