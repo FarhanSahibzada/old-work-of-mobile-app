@@ -122,22 +122,37 @@ userRouter.get("/currentUser", verifyToken, async (req, res) => {
   }
 });
 
+
 // to get All user data
 userRouter.get("/allUsers", async (req, res) => {
   try {
-    const allUsers = await ClientModel.find().select("-password -address");
+    const allUsers = await ClientModel.find().select("-password");
 
     if (allUsers.length === 0) {
       return sendResponse(res, 404, null, true, "No users found.");
     }
 
-    console.log("All Users from DB:", allUsers);
     sendResponse(res, 200, allUsers, false, "Fetched Data Successfully");
   } catch (error) {
     console.error("Error fetching users:", error);
     sendResponse(res, 500, null, true, "Internal Server Error");
   }
 });
+
+
+//For fetching All Drivers
+userRouter.get("/allDrivers", async (req, res) => {
+  try {
+    const allDrivers = await ClientModel.find({ role: "driver" }).select(
+      "-password"
+    );
+    if (allDrivers.length === 0) {
+      return sendResponse(res, 404, null, true, "No drivers found.");
+    }
+    sendResponse(res, 200, allDrivers, false, "Drivers Fetched Successfully");
+  } catch (error) {
+    console.error("Error fetching drivers:", error.message);
+    sendResponse(res, 400, null, true, "Internal Server Error");
 
 // delete user API
 userRouter.delete("/:id", async (req, res) => {
