@@ -1,182 +1,103 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Alert,KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Alert, KeyboardAvoidingView, ScrollView, Platform, Keyboard } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import * as Location from 'expo-location'
+import { MaterialIcons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../Store/Store';
 import axios from 'axios';
 import { AppRoutes } from '../../constant/constant';
-const { width } = Dimensions.get('screen')
-const { height } = Dimensions.get('screen')
+import { useRouter } from "expo-router";
 
-export type locationType = {
-  latitude: number;
-  longitude: number;
-  latitudeDelta: number;
-  longitudeDelta: number;
-};
+const { width, height } = Dimensions.get('screen');
 
 export default function HomeScreen() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(null)
-  const [destination, setDestination] = useState<Location.LocationObject | null>(null)
-  const [currentLocationText, setCurrentLocationText] = useState('')
-  const [destinationText, setDestinationText] = useState('')
-  const userData = useSelector((state: RootState) => state.userAuth.userLogin)
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [destinationText, setDestinationText] = useState('');
+  const [currentLocationText, setCurrentLocationText] = useState('');
+  const userData = useSelector((state: RootState) => state.userAuth.userLogin);
+  const router = useRouter()
 
   useEffect(() => {
     const accessLocation = async () => {
       try {
-        let { status } = await Location.requestForegroundPermissionsAsync()
+        let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
-          console.log("permission was access location is denied")
+          console.log("Permission denied");
         }
-        const getLocation = await Location.getCurrentPositionAsync()
-        setLocation(getLocation)
+        const getLocation = await Location.getCurrentPositionAsync();
+        setLocation(getLocation);
       } catch (error) {
-        console.log("error when getting the location", error)
+        console.log("Error getting location:", error);
       }
-    }
-    accessLocation()
-  }, [])
-
-  const defaultPickup = {
-    latitude: 24.8607,
-    longitude: 67.0011,
-    latitudeDelta: 0.05,
-    longitudeDelta: 0.05
-  }
-  const region = location
-    ? {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      latitudeDelta: 0.05,
-      longitudeDelta: 0.05,
-    }
-    : defaultPickup;
+    };
+    accessLocation();
+  }, []);
 
   const confirmRide = async () => {
     if (!currentLocationText || !destinationText) {
-      Alert.alert(
-        "Empty Input ",
-        "Please Fill the pickup route and end route",
-        [
-          {
-            text: "ok"
-          }
-        ]
-      )
+      Alert.alert("Empty Input", "Please fill the pickup route and end route", [{ text: "OK" }]);
+      return;
     }
+
     const obj = {
       userID: userData?._id,
       from: currentLocationText,
-      to: destinationText
-    }
+      to: destinationText,
+    };
+
     try {
-      const response = await axios.post(AppRoutes.SendRideData, obj)
-      if(response && response.data){
-        console.log(response.data.data)
+      const response = await axios.post(AppRoutes.SendRideData, obj);
+      if (response && response.data) {
+        const data = response.data.data; 
+        console.log(data)
+        if(data?.matchedRides.length >0){
+          router.push({
+            pathname : "/pages/UserHome",
+            params : {data : JSON.stringify(data)}
+          })
+        }else{
+          Alert.alert(
+            "No Rides Match",
+            "please try again"
+          )
+        }
       }
     } catch (error) {
-      console.log("error when sending the destination",)
+      console.log("Error sending destination");
     }
-  }
+  };
 
   return (
-    <>
-    <View style={{flex : 1 , justifyContent : "center" , alignItems : 'center'}}>
-    <View style={styles.container}>
-      {/* Navbar */}
-      <View style={styles.navbar}>
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu" size={30} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.navTitle}>Car Sharing</Text>
-        <TouchableOpacity>
-          <Image 
-            source={{ uri: 'https://via.placeholder.com/40' }} // Replace with user image URL
-            style={styles.userImage} 
-          />
-        </TouchableOpacity>
-      </View>
-      {/* Map View */}
-      <MapView 
-        style={styles.map}
-        initialRegion={{
-          latitude: pickup.latitude,
-          longitude: pickup.longitude,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        }}
+    <KeyboardAvoidingView 
+      style={{ flex: 1, backgroundColor: 'white' }} 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }} 
+        keyboardShouldPersistTaps="handled"
       >
-        <Marker coordinate={pickup} title="Pickup Location" />
-        <Marker coordinate={destination} title="Destination" pinColor="blue" />
-      </MapView>
-      {/* Bottom UI Section */}
-      <View style={styles.bottomContainer}>
-        {/* Pickup Input */}
-        <View style={styles.inputWrapper}>
-          <MaterialIcons name="my-location" size={20} color="gray" />
-          <TextInput
-            style={styles.input}
-            placeholder="Enter pickup location"
-            onChangeText={(text) => setPickup({ ...pickup, latitude: parseFloat(text) })}
-          />
-        </View>
-        {/* Destination Input */}
-        <View style={styles.inputWrapper}>
-          <MaterialIcons name="location-on" size={20} color="red" />
-          <TextInput
-            style={styles.input}
-            placeholder="Enter destination"
-            onChangeText={(text) => setDestination({ ...destination, latitude: parseFloat(text) })}
-          />
-        </View>
-        {/* Ride Sharing Options */}
-        <View style={styles.rideOptions}>
-          <TouchableOpacity style={styles.rideButton}>
-            <Ionicons name="car-outline" size={24} color="black" />
-            <Text style={styles.rideText}>Book a Ride</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.rideButton}>
-            <Ionicons name="add-circle-outline" size={24} color="black" />
-            <Text style={styles.rideText}>Offer a Ride</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.rideButton}>
-            <Ionicons name="location-outline" size={24} color="black" />
-            <Text style={styles.rideText}>Nearby Rides</Text>
-          </TouchableOpacity>
-        </View>
-        {/* Confirm Ride Button */}
-        <TouchableOpacity style={styles.confirmButton}>
-          <Text style={styles.confirmText}>Search for Rides</Text>
-        </TouchableOpacity>
-      </View>   
-    </View>
-    </View>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: 'center', backgroundColor: 'white' }}>
         <View style={styles.container}>
-          {/* Map View */}
-          <View style={{ borderRadius: 20, overflow: 'hidden', marginTop: 20, }}>
+          {/* Map Section */}
+          <View style={{ borderRadius: 20, overflow: 'hidden', marginTop: 20 }}>
             <MapView
-              style={{
-                width: width,
-                height: height * 0.35,
-              }}
+              style={{ width: width, height: height * 0.35 }}
               showsCompass={true}
               showsTraffic={true}
               showsUserLocation={true}
               provider={PROVIDER_GOOGLE}
-              initialRegion={region}
+              initialRegion={{
+                latitude: 24.8607,
+                longitude: 67.0011,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              }}
             >
-              <Marker coordinate={defaultPickup} title="Pickup Location" />
-              {destination && (
-                <Marker coordinate={destination.coords} title="Destination" pinColor="blue" />
-              )}
+              <Marker coordinate={{ latitude: 24.8607, longitude: 67.0011 }} title="Pickup Location" />
             </MapView>
           </View>
           {/* Bottom UI Section */}
-          <View style={styles.bottomContainer}>
+          <View style={[styles.bottomContainer]}>
             <TouchableOpacity style={styles.rideButton}>
               <Text style={styles.rideText}>Book a Ride</Text>
             </TouchableOpacity>
@@ -196,45 +117,25 @@ export default function HomeScreen() {
                 placeholder="Enter destination"
                 onChangeText={(text) => setDestinationText(text)}/>
             </View>
-            {/* Ride Sharing Options */}
-            <View style={styles.rideOptions}>
-              {/* <TouchableOpacity style={styles.rideButton}>
-                <Ionicons name="car-outline" size={24} color="black" />
-                <Text style={styles.rideText}>Book a Ride</Text>
-              </TouchableOpacity> */}
-              {/* <TouchableOpacity style={styles.rideButton}>
-                <Ionicons name="add-circle-outline" size={24} color="black" />
-                <Text style={styles.rideText}>Offer a Ride</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rideButton}>
-                <Ionicons name="location-outline" size={24} color="black" />
-                <Text style={styles.rideText}>Nearby Rides</Text>
-              </TouchableOpacity> */}
-            </View>
+
             {/* Confirm Ride Button */}
-            <TouchableOpacity style={styles.confirmButton}
-              onPress={() => confirmRide()}>
+            <TouchableOpacity style={styles.confirmButton} onPress={confirmRide}>
               <Text style={styles.confirmText}>Confirm Ride</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </View >
-    </>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  userImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
+
   bottomContainer: {
     marginTop: 4,
     padding: 16,
-    height: "50%",
     backgroundColor: 'white',
-    // elevation: 5,
     borderRadius: 15,
   },
   inputWrapper: {
@@ -251,12 +152,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
-  },
-  rideOptions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-    gap: 4,
   },
   rideButton: {
     borderRadius: 10,
@@ -280,3 +175,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

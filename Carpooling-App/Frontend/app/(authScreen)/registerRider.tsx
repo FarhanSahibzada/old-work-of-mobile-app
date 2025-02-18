@@ -102,7 +102,7 @@ const RegisterRider = () => {
       vehicleNo: formDataWithImage.vehicleNumber,
       licenseNo: "ked-0987",
       vehicleImage: "https://i.dawn.com/primary/2022/05/6293d74452150.jpg",
-      role: "rider",
+      role: "driver",
     };
     console.log("obj", obj);
     
@@ -111,7 +111,7 @@ const RegisterRider = () => {
       console.log(res);
       if (res && res.data) {
         dispatch(userLogin(res.data.data))
-        if(data?.role === 'rider'){
+        if(data?.role === 'driver'){
           router.push('/(Driver)/(Home)')
           return
         }else{

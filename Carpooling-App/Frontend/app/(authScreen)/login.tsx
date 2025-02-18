@@ -6,13 +6,11 @@ import axios from "axios";
 import { AppRoutes } from "../constant/constant";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-
-import { userLogin } from "../../Store/UserAuthSlice.tsx";
-
-
+import { userLogin } from "../../Store/UserAuthSlice";
+import { ThemedText } from "../../components/ThemedText";
 
 const LogIn = () => {
-  const { control, handleSubmit , reset } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       email: "",
       password: ""
@@ -30,26 +28,26 @@ const LogIn = () => {
         const data = response.data.data;
         saveToken(data?.token)
         dispatch(userLogin(data?.user))
-        if(data?.role === 'rider'){
+        if (data?.role === 'driver') {
           router.push('/(Driver)/(Home)')
           return
-        }else{
+        } else {
           router.push('/(user)/(Home)')
-        } 
+        }
       }
     } catch (error) {
       console.log("error sending the code ", error)
-    Alert.alert(
-      'Invalid Input',
-      'Please correct the password and gmail',
-      [
-        {
-          text: 'ok',
-          onPress : () => reset()
-          
-        }
-      ]
-    )
+      Alert.alert(
+        'Invalid Input',
+        'Please correct the password and gmail',
+        [
+          {
+            text: 'ok',
+            onPress: () => reset()
+
+          }
+        ]
+      )
     }
     finally {
       setLoading(false)
@@ -141,6 +139,12 @@ const LogIn = () => {
             )}
           </TouchableOpacity>
         </View>
+        <ThemedText style={styles.footerText} type="default">
+          Create Account?{' '}
+          <ThemedText style={styles.loginLink} type="link" onPress={() => router.push('/')}>
+            Sign Up
+          </ThemedText>
+        </ThemedText>
       </ScrollView>
     </>
   );
@@ -213,6 +217,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
+  },
+  footerText: {
+    marginTop: 15,
+  },
+  loginLink : {
+    fontWeight : "800",
+
   }
 });
 

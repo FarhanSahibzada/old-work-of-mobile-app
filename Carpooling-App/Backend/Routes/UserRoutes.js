@@ -21,7 +21,7 @@ const userRegisterSchema = Joi.object({
   gender: Joi.string().min(3).max(30).required(),
   phoneNumber: Joi.number(),
   address: Joi.string().min(10).max(50).required(),
-  profileImage: Joi.string().min(10).max(50).required(),
+  // profileImage: Joi.string().min(10).max(50).required(),
   role: Joi.string().required(),
 });
 
