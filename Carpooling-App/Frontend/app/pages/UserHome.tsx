@@ -7,8 +7,10 @@ import { useLocalSearchParams } from 'expo-router';
 
 
 function UserHome() {
+
    const { data }  = useLocalSearchParams()
    const rideData = typeof data === "string" ? JSON.parse(data) : [];
+
   return (
     <View style={{ flex: 1, marginTop: 30 }}>
       <Header />

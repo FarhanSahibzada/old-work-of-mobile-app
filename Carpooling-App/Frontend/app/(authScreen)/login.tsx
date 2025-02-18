@@ -9,7 +9,6 @@ import { useDispatch } from "react-redux";
 import { userLogin } from "../../Store/UserAuthSlice";
 import { ThemedText } from "../../components/ThemedText";
 
-
 const LogIn = () => {
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -77,11 +76,7 @@ const LogIn = () => {
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView contentContainerStyle={styles.container}>
         <Image source={require("@/assets/images/sharelogo.jpg")} style={styles.logo} />
-
-
         <Text style={styles.title}>Welcome to Car Pool App</Text>
-
-
         <Text style={styles.description}>
           Join our community to share rides, save costs, and make your journey more enjoyable!
         </Text>
@@ -135,9 +130,13 @@ const LogIn = () => {
             )}
           />
 
-          {/* Login Button */}
-          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.buttonText}>Login</Text>
+          {/* Login Button with Loading Indicator */}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Login</Text>
+            )}
           </TouchableOpacity>
         </View>
         <ThemedText style={styles.footerText} type="default">

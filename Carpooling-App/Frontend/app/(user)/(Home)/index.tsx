@@ -96,13 +96,11 @@ export default function HomeScreen() {
               <Marker coordinate={{ latitude: 24.8607, longitude: 67.0011 }} title="Pickup Location" />
             </MapView>
           </View>
-
           {/* Bottom UI Section */}
           <View style={[styles.bottomContainer]}>
             <TouchableOpacity style={styles.rideButton}>
               <Text style={styles.rideText}>Book a Ride</Text>
             </TouchableOpacity>
-
             <View style={styles.inputWrapper}>
               <MaterialIcons name="my-location" size={20} color="gray" />
               <TextInput
@@ -112,14 +110,12 @@ export default function HomeScreen() {
                 onChangeText={(text) => setCurrentLocationText(text)}
               />
             </View>
-
             <View style={styles.inputWrapper}>
               <MaterialIcons name="location-on" size={20} color="red" />
               <TextInput
                 style={styles.input}
                 placeholder="Enter destination"
-                onChangeText={(text) => setDestinationText(text)}
-              />
+                onChangeText={(text) => setDestinationText(text)}/>
             </View>
 
             {/* Confirm Ride Button */}
@@ -135,6 +131,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+
   bottomContainer: {
     marginTop: 4,
     padding: 16,

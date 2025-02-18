@@ -31,6 +31,7 @@ interface FormData {
   vehicleType: string;
   vehicleNumber: string;
   vehicleImage: string | null;
+  profileImage: string | null;
   licenseNumber: string;
   role? : string
 }
@@ -48,14 +49,28 @@ const RegisterRider = () => {
       vehicleType: "",
       vehicleNumber: "",
       vehicleImage: null,
+      profileImage: null,
       licenseNumber: "",
     },
   });
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [vehicleImage, setVehicleImage] = useState<string | null>(null);
   const [loading , setLoading ] = useState(false)
   const router = useRouter()
   const dispatch = useDispatch()
 
+  const pickProfileImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
   const pickVehicleImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -89,8 +104,11 @@ const RegisterRider = () => {
       vehicleImage: "https://i.dawn.com/primary/2022/05/6293d74452150.jpg",
       role: "driver",
     };
+    console.log("obj", obj);
+    
     try {
       const res = await axios.post(AppRoutes.signupRider, obj);
+      console.log(res);
       if (res && res.data) {
         dispatch(userLogin(res.data.data))
         if(data?.role === 'driver'){
@@ -337,6 +355,16 @@ const RegisterRider = () => {
 </View>
 
 
+          {/* Vehicle Image */}
+          <TouchableOpacity
+            onPress={pickProfileImage}
+            style={styles.imagePickerButton}
+          >
+            <Text style={styles.imagePickerText}>Profile Image</Text>
+          </TouchableOpacity>
+          {vehicleImage && (
+            <Image source={{ uri: vehicleImage }} style={styles.image} />
+          )}
           {/* Vehicle Image */}
           <TouchableOpacity
             onPress={pickVehicleImage}
