@@ -22,14 +22,14 @@ import { userLogin } from "../../Store/UserAuthSlice";
 
 interface FormData {
   name: string;
-  contact: string;
-  cnic: string;
+  phoneNumber: string;
+  nicNo: string;
   email: string;
   password: string;
   address: string;
   gender: string;
-  vehicleType: string;
-  vehicleNumber: string;
+  vehicleCategory: string;
+  vehicleNo: string;
   vehicleImage: string | null;
   profileImage: string | null;
   licenseNumber: string;
@@ -40,17 +40,18 @@ const RegisterRider = () => {
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
       name: "",
-      contact: "",
-      cnic: "",
+      phoneNumber: "",
+      nicNo: "",
       email: "",
       password: "",
       address: "",
       gender: "",
-      vehicleType: "",
-      vehicleNumber: "",
+      vehicleCategory: "",
+      vehicleNo: "",
       vehicleImage: null,
       profileImage: null,
       licenseNumber: "",
+      role:""
     },
   });
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -87,20 +88,20 @@ const RegisterRider = () => {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     const formDataWithImage = { ...data, vehicleImage };
-    console.log("Submitted Data:", formDataWithImage.email);
+    console.log("Submitted Data:", formDataWithImage);
 
     const obj = {
       email: formDataWithImage.email,
       password: formDataWithImage.password,
       name: formDataWithImage.name,
       gender: formDataWithImage.gender,
-      phoneNumber: formDataWithImage.contact,
+      phoneNumber: formDataWithImage.phoneNumber,
       address: formDataWithImage.address,
       profileImage: "https://cdn-icons-png.flaticon.com/512/6858/6858504.png",
-      nicNo: formDataWithImage.cnic,
-      vehicleCategory: formDataWithImage.vehicleType,
-      vehicleNo: formDataWithImage.vehicleNumber,
-      licenseNo: "ked-0987",
+      nicNo: formDataWithImage.nicNo,
+      vehicleCategory: formDataWithImage.vehicleCategory,
+      vehicleNo: formDataWithImage.vehicleNo,
+      licenseNo: "ked-9876",
       vehicleImage: "https://i.dawn.com/primary/2022/05/6293d74452150.jpg",
       role: "driver",
     };
@@ -119,7 +120,7 @@ const RegisterRider = () => {
         }
       }
     } catch (error) {
-      console.log("error when submiting the data", error);
+      console.log("error when submiting the data", error.message);
     } finally {
       setLoading(false);
     }
@@ -176,7 +177,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>Contact</Text>
           <Controller
             control={control}
-            name="contact"
+            name="phoneNumber"
             rules={{
               required: "Contact is required",
               pattern: { value: /^[0-9]+$/, message: "Invalid contact number" },
@@ -199,7 +200,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>CNIC</Text>
           <Controller
             control={control}
-            name="cnic"
+            name="nicNo"
             rules={{
               required: "CNIC is required",
               minLength: { value: 13, message: "CNIC must be 13 digits" },
@@ -293,7 +294,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>Vehicle Number</Text>
           <Controller
             control={control}
-            name="vehicleNumber"
+            name="vehicleNo"
             rules={{ required: "Vehicle number is required" }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <>
@@ -335,7 +336,7 @@ const RegisterRider = () => {
     <Text style={styles.label2}>Vehicle Type</Text>
     <Controller
       control={control}
-      name="vehicleType"
+      name="vehicleCategory"
       render={({ field: { onChange, value } }) => (
         <View style={styles.picker2}>
           <Picker

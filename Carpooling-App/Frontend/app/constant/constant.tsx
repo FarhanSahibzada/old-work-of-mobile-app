@@ -1,5 +1,5 @@
-const devURL = "http://192.168.5.230:4000";
-const devURL = "http://192.168.7.79:4000";
+// const devURL = "http://192.168.5.230:4000";
+const devURL = "http://192.168.5.229:4000";
 const prodURL = "";
 export const BASE_URL = devURL;
 export const AppRoutes = {
