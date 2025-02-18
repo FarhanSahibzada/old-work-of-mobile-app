@@ -21,7 +21,7 @@ const userRegisterSchema = Joi.object({
   gender: Joi.string().min(3).max(30).required(),
   phoneNumber: Joi.number(),
   address: Joi.string().min(10).max(50).required(),
-  profileImage: Joi.string().min(10).max(50).required(),
+  // profileImage: Joi.string().min(10).max(50).required(),
   role: Joi.string().required(),
 });
 
@@ -97,7 +97,7 @@ userRouter.post("/login", async (req, res) => {
   var token = jwt.sign(
     { id: user._id, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    //{ expiresIn: "1h" }
   );
 
   return sendResponse(

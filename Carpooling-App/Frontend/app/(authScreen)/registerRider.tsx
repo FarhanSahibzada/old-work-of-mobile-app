@@ -87,13 +87,13 @@ const RegisterRider = () => {
       vehicleNo: formDataWithImage.vehicleNumber,
       licenseNo: "ked-0987",
       vehicleImage: "https://i.dawn.com/primary/2022/05/6293d74452150.jpg",
-      role: "rider",
+      role: "driver",
     };
     try {
       const res = await axios.post(AppRoutes.signupRider, obj);
       if (res && res.data) {
         dispatch(userLogin(res.data.data))
-        if(data?.role === 'rider'){
+        if(data?.role === 'driver'){
           router.push('/(Driver)/(Home)')
           return
         }else{
