@@ -33,7 +33,7 @@ interface FormData {
   vehicleImage: string | null;
   profileImage: string | null;
   licenseNumber: string;
-  role? : string
+  role?: string;
 }
 
 const RegisterRider = () => {
@@ -56,9 +56,9 @@ const RegisterRider = () => {
   });
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [vehicleImage, setVehicleImage] = useState<string | null>(null);
-  const [loading , setLoading ] = useState(false)
-  const router = useRouter()
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const pickProfileImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -67,11 +67,31 @@ const RegisterRider = () => {
       aspect: [4, 4],
       quality: 1,
     });
-  
+
     if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+      const file = result.assets[0].uri;
+      if (!file) return console.log("Pic is Empty");
+      const cloud = process.env.VITE_CLOUDINARY_CLOUDNAME;
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", "Ride_Sharing");
+      data.append("folder", "Ride_Sharing/Users");
+      data.append("cloud_name", cloud);
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloud}/image/upload`,
+        {
+          method: "POST",
+          body: data,
+        }
+      )
+        .then((response) => response.json())
+        .then(async (data) => {
+          const URL = data.url;
+          setProfileImage(URL);
+        });
     }
   };
+
   const pickVehicleImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -81,14 +101,32 @@ const RegisterRider = () => {
     });
 
     if (!result.canceled) {
-      setVehicleImage(result.assets[0].uri);
+      const file = result.assets[0].uri;
+      if (!file) return console.log("Pic is Empty");
+      const cloud = process.env.VITE_CLOUDINARY_CLOUDNAME;
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", "Ride_Sharing");
+      data.append("folder", "Ride_Sharing/Vehicles");
+      data.append("cloud_name", cloud);
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloud}/image/upload`,
+        {
+          method: "POST",
+          body: data,
+        }
+      )
+        .then((response) => response.json())
+        .then(async (data) => {
+          const URL = data.url;
+          setVehicleImage(URL);
+        });
     }
   };
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     const formDataWithImage = { ...data, vehicleImage };
-    console.log("Submitted Data:", formDataWithImage);
 
     const obj = {
       email: formDataWithImage.email,
@@ -97,16 +135,16 @@ const RegisterRider = () => {
       gender: formDataWithImage.gender,
       phoneNumber: formDataWithImage.phoneNumber,
       address: formDataWithImage.address,
-      profileImage: "https://cdn-icons-png.flaticon.com/512/6858/6858504.png",
-      nicNo: formDataWithImage.nicNo,
-      vehicleCategory: formDataWithImage.vehicleCategory,
-      vehicleNo: formDataWithImage.vehicleNo,
-      licenseNo: "ked-9876",
-      vehicleImage: "https://i.dawn.com/primary/2022/05/6293d74452150.jpg",
-      role: "driver",
+      profileImage: profileImage,
+      nicNo: formDataWithImage.cnic,
+      vehicleCategory: formDataWithImage.vehicleType,
+      vehicleNo: formDataWithImage.vehicleNumber,
+      licenseNo: "ked-0987",
+      vehicleImage: vehicleImage,
+      role: "rider",
     };
     console.log("obj", obj);
-    
+
     try {
       const res = await axios.post(AppRoutes.signupRider, obj);
       console.log(res);
@@ -308,6 +346,7 @@ const RegisterRider = () => {
               </>
             )}
           />
+
  <View style={styles.rowContainer}>
   {/* Gender */}
   <View style={styles.pickerWrapper}>
@@ -355,6 +394,29 @@ const RegisterRider = () => {
   </View>
 </View>
 
+            {/* Vehicle Type */}
+            <View style={styles.pickerWrapper}>
+              <Text style={styles.label2}>Vehicle Type</Text>
+              <Controller
+                control={control}
+                name="vehicleType"
+                render={({ field: { onChange, value } }) => (
+                  <View style={styles.picker2}>
+                    <Picker
+                      selectedValue={value}
+                      onValueChange={onChange}
+                      style={styles.pickerStyle}
+                    >
+                      <Picker.Item label="Select Vehicle Type" value="" />
+                      <Picker.Item label="Bike" value="Bike" />
+                      <Picker.Item label="Car" value="Car" />
+                      <Picker.Item label="Rickshaw" value="Rickshaw" />
+                    </Picker>
+                  </View>
+                )}
+              />
+            </View>
+          </View>
 
           {/* Vehicle Image */}
           <TouchableOpacity
@@ -415,7 +477,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: "100%",
   },
-  label: { color: "#333", fontSize: 13, marginBottom: 8 ,  fontWeight: "bold",},
+  label: { color: "#333", fontSize: 13, marginBottom: 8, fontWeight: "bold" },
   input: {
     borderWidth: 1,
     borderColor: "#E0E0E0",
@@ -462,26 +524,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   rowContainer: {
-    flexDirection: "row", 
+    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
     marginBottom: 10,
   },
   pickerWrapper: {
-    flex: 1, 
-    marginHorizontal: 5, 
+    flex: 1,
+    marginHorizontal: 5,
   },
   picker2: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    height: 45, 
+    height: 45,
   },
   pickerStyle: {
     height: 50,
     width: "100%",
-    },
+  },
   label2: {
     fontSize: 14,
     fontWeight: "bold",

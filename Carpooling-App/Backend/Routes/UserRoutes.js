@@ -155,6 +155,8 @@ userRouter.get("/allDrivers", async (req, res) => {
     sendResponse(res, 400, null, true, "Internal Server Error");
   }
 });
+
+
 // delete user API
 userRouter.delete("/:id", async (req, res) => {
   try {
