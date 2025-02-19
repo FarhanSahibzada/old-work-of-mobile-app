@@ -21,7 +21,7 @@ const userRegisterSchema = Joi.object({
   gender: Joi.string().min(3).max(30).required(),
   phoneNumber: Joi.number(),
   address: Joi.string().min(10).max(50).required(),
-  profileImage: Joi.string().min(10).max(50).required(),
+  // profileImage: Joi.string().min(10).max(50).required(),
   role: Joi.string().required(),
 });
 
@@ -154,7 +154,8 @@ userRouter.get("/allDrivers", async (req, res) => {
     console.error("Error fetching drivers:", error.message);
     sendResponse(res, 400, null, true, "Internal Server Error");
   }
-})
+});
+
 
 // delete user API
 userRouter.delete("/:id", async (req, res) => {

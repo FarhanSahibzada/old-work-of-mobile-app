@@ -12,10 +12,11 @@ import {
 import { Ionicons, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 
 interface RideCardProps {
-  driverName: string;
-  driverImage: string;
-  vehicleNumber: string;
-  categoryType: string;
+  _id? : string,
+  name: string;
+  profileImage: string;
+  vehicleNo: string;
+  vehicleCategory: string;
   gender: string;
   startLocation: string;
   endLocation: string;
@@ -23,14 +24,15 @@ interface RideCardProps {
   fare: number;
   price: number;
   time: string;
+  address? : string,
   onRideSelect: () => void;
 }
 
 const RideCard: React.FC<RideCardProps> = ({
-  driverName,
-  driverImage,
-  vehicleNumber,
-  categoryType,
+  name,
+  profileImage,
+  vehicleNo,
+  vehicleCategory,
   gender,
   startLocation,
   endLocation,
@@ -42,9 +44,9 @@ const RideCard: React.FC<RideCardProps> = ({
 
   const handleWhatsappMsg = () => {
     const driverNumber = "+92 332 0145410"; 
-    const message = `Assalam o Alikum ${driverName}, 
+    const message = `Assalam o Alikum ${name}, 
 I want to book your ride. 
-🚗 Vehicle: ${categoryType} (${vehicleNumber})
+🚗 Vehicle: ${vehicleCategory} (${vehicleNo})
 📍 Route: ${startLocation} → ${endLocation}
 ⏰ Time: ${time}
 💰 Charges: Rs ${fare}
@@ -83,11 +85,11 @@ Is the seat available?`;
     <View style={styles.card}>
       <TouchableOpacity onPress={() => setModalVisible(true)}>
         <View style={styles.row}>
-          <Image source={{ uri: driverImage }} style={styles.profileImage} />
+          <Image source={{ uri: profileImage }} style={styles.profileImage} />
           <View style={styles.info}>
-            <Text style={styles.name}>{driverName}</Text>
+            <Text style={styles.name}>{name}</Text>
             <Text style={styles.details}>
-              {categoryType} - {vehicleNumber}
+              {vehicleCategory} - {vehicleNo}
             </Text>
             <Text style={styles.details}>
               Rs {fare} - {seatsAvailable} Seats
@@ -111,10 +113,10 @@ Is the seat available?`;
             >
               <Ionicons name="close" size={24} color="black" />
             </TouchableOpacity>
-            <Image source={{ uri: driverImage }} style={styles.modalImage} />
-            <Text style={styles.modalName}>{driverName}</Text>
-            <Text style={styles.modalText}>Vehicle No: {vehicleNumber}</Text>
-            <Text style={styles.modalText}>Category: {categoryType}</Text>
+            <Image source={{ uri: profileImage }} style={styles.modalImage} />
+            <Text style={styles.modalName}>{name}</Text>
+            <Text style={styles.modalText}>Vehicle No: {vehicleNo}</Text>
+            <Text style={styles.modalText}>Category: {vehicleCategory}</Text>
             <Text style={styles.modalText}>Gender: {gender}</Text>
             <Text style={styles.modalText}>Time: {time}</Text>
             <Text style={styles.modalText}>Seats Available: {seatsAvailable}</Text>

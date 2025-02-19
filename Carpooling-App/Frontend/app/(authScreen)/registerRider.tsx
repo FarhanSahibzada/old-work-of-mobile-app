@@ -22,14 +22,14 @@ import { userLogin } from "../../Store/UserAuthSlice";
 
 interface FormData {
   name: string;
-  contact: string;
-  cnic: string;
+  phoneNumber: string;
+  nicNo: string;
   email: string;
   password: string;
   address: string;
   gender: string;
-  vehicleType: string;
-  vehicleNumber: string;
+  vehicleCategory: string;
+  vehicleNo: string;
   vehicleImage: string | null;
   profileImage: string | null;
   licenseNumber: string;
@@ -40,17 +40,18 @@ const RegisterRider = () => {
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
       name: "",
-      contact: "",
-      cnic: "",
+      phoneNumber: "",
+      nicNo: "",
       email: "",
       password: "",
       address: "",
       gender: "",
-      vehicleType: "",
-      vehicleNumber: "",
+      vehicleCategory: "",
+      vehicleNo: "",
       vehicleImage: null,
       profileImage: null,
       licenseNumber: "",
+      role:""
     },
   });
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -132,7 +133,7 @@ const RegisterRider = () => {
       password: formDataWithImage.password,
       name: formDataWithImage.name,
       gender: formDataWithImage.gender,
-      phoneNumber: formDataWithImage.contact,
+      phoneNumber: formDataWithImage.phoneNumber,
       address: formDataWithImage.address,
       profileImage: profileImage,
       nicNo: formDataWithImage.cnic,
@@ -148,16 +149,16 @@ const RegisterRider = () => {
       const res = await axios.post(AppRoutes.signupRider, obj);
       console.log(res);
       if (res && res.data) {
-        dispatch(userLogin(res.data.data));
-        if (data?.role === "rider") {
-          router.push("/(Driver)/(Home)");
-          return;
-        } else {
-          router.push("/(user)/(Home)");
+        dispatch(userLogin(res.data.data))
+        if(data?.role === 'driver'){
+          router.push('/(Driver)/(Home)')
+          return
+        }else{
+          router.push('/(user)/(Home)')
         }
       }
     } catch (error) {
-      console.log("error when submiting the data", error);
+      console.log("error when submiting the data", error.message);
     } finally {
       setLoading(false);
     }
@@ -214,7 +215,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>Contact</Text>
           <Controller
             control={control}
-            name="contact"
+            name="phoneNumber"
             rules={{
               required: "Contact is required",
               pattern: { value: /^[0-9]+$/, message: "Invalid contact number" },
@@ -237,7 +238,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>CNIC</Text>
           <Controller
             control={control}
-            name="cnic"
+            name="nicNo"
             rules={{
               required: "CNIC is required",
               minLength: { value: 13, message: "CNIC must be 13 digits" },
@@ -331,7 +332,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>Vehicle Number</Text>
           <Controller
             control={control}
-            name="vehicleNumber"
+            name="vehicleNo"
             rules={{ required: "Vehicle number is required" }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <>
@@ -345,28 +346,53 @@ const RegisterRider = () => {
               </>
             )}
           />
-          <View style={styles.rowContainer}>
-            {/* Gender */}
-            <View style={styles.pickerWrapper}>
-              <Text style={styles.label2}>Gender</Text>
-              <Controller
-                control={control}
-                name="gender"
-                render={({ field: { onChange, value } }) => (
-                  <View style={styles.picker2}>
-                    <Picker
-                      selectedValue={value}
-                      onValueChange={onChange}
-                      style={styles.pickerStyle}
-                    >
-                      <Picker.Item label="Select Gender" value="" />
-                      <Picker.Item label="Male" value="Male" />
-                      <Picker.Item label="Female" value="Female" />
-                    </Picker>
-                  </View>
-                )}
-              />
-            </View>
+
+ <View style={styles.rowContainer}>
+  {/* Gender */}
+  <View style={styles.pickerWrapper}>
+    <Text style={styles.label2}>Gender</Text>
+    <Controller
+      control={control}
+      name="gender"
+      render={({ field: { onChange, value } }) => (
+        <View style={styles.picker2}>
+          <Picker
+            selectedValue={value}
+            onValueChange={onChange}
+            style={styles.pickerStyle}
+          >
+            <Picker.Item label="Select Gender" value="" />
+            <Picker.Item label="Male" value="Male" />
+            <Picker.Item label="Female" value="Female" />
+          </Picker>
+        </View>
+      )}
+    />
+  </View>
+
+  {/* Vehicle Type */}
+  <View style={styles.pickerWrapper}>
+    <Text style={styles.label2}>Vehicle Type</Text>
+    <Controller
+      control={control}
+      name="vehicleCategory"
+      render={({ field: { onChange, value } }) => (
+        <View style={styles.picker2}>
+          <Picker
+            selectedValue={value}
+            onValueChange={onChange}
+            style={styles.pickerStyle}
+          >
+            <Picker.Item label="Select Vehicle Type" value="" />
+            <Picker.Item label="Bike" value="Bike" />
+            <Picker.Item label="Car" value="Car" />
+            <Picker.Item label="Rickshaw" value="Rickshaw" />
+          </Picker>
+        </View>
+      )}
+    />
+  </View>
+</View>
 
             {/* Vehicle Type */}
             <View style={styles.pickerWrapper}>

@@ -42,7 +42,7 @@ const RegisterUser = () => {
       const response = await axios.post(AppRoutes.signupUser, formData)
       if (response) {
         dispatch(userLogin(response.data?.data))
-        if (data?.role === 'rider') {
+        if (data?.role === 'driver') {
           router.push('/(Driver)/(Home)')
           return
         } else {
