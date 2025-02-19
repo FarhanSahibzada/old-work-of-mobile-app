@@ -64,6 +64,8 @@ function Index() {
       fetchdata();
     }
   }, [token])
+
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
