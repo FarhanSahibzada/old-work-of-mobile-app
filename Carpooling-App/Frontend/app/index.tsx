@@ -62,27 +62,10 @@ function Index() {
       }
       };
       fetchdata();
-          if (response && response.data) {
-            const data = response.data?.data;
-            dispatch(userLogin(data))
-            if (data?.role === 'rider') {
-              router.push('/(Driver)/(Home)')
-              return
-            } else {
-              router.push('/(user)/(Home)')
-            }
-          }
-        }
-        catch (error) {
-          console.log("error when fetching the data ", error)
-        }
-        finally {
-          setLoading(false)
-        }
-      }
-      fetchdata()
     }
   }, [token])
+
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>

@@ -7,10 +7,11 @@ dotenv.config(); // Load .env file
 
 const ridesRoutes = express.Router();
 
+
 ridesRoutes.post("/rider", async (req, res) => {
   try {
-    const { userID, availableSeats, expense, from, to } = req.body;
-    let newRide = RidesModel({ userID, availableSeats, expense, from, to });
+    const { userID, availableSeats, farePerSeat, routes } = req.body;
+    let newRide = RidesModel({ userID, availableSeats, farePerSeat, routes });
     newRide = await newRide.save();
     sendResponse(res, 200, newRide, false, "Ride Added Successfully");
   } catch (error) {
@@ -18,33 +19,61 @@ ridesRoutes.post("/rider", async (req, res) => {
   }
 });
 
+
 //for finding similar rides with gender specification
+// ridesRoutes.post("/user", async (req, res) => {
+//   try {
+//     const { userID, from, to } = req.body;
+//     const user = await ClientModel.findById(userID);
+//     const userFrom = from;
+//     const userTo = to;
+//     const availableRides = await RidesModel.find({
+//       from: userFrom,
+//       to: userTo,
+//     });
+//     if (!availableRides) {
+//       return sendResponse(res, 400, null, true, "No Rides Available");
+//     }
+//     const riderdata = availableRides.map((data) => data.userID);
+//     const matchedRides = await ClientModel.find({
+//       _id: { $in: riderdata },
+//       gender: user.gender,
+//     });
+//     const ridersID = matchedRides.map((data) => data.id);
+//     const rideExpense = await RidesModel.find({
+//       userID: { $in: ridersID },
+//     });
+//     sendResponse(res, 200, { matchedRides, user, rideExpense }, false, "Rides Found");
+//   } catch (error) {
+//     sendResponse(res, 404, null, true, error.message);
+//   }
+// });
+
+
 ridesRoutes.post("/user", async (req, res) => {
   try {
     const { userID, from, to } = req.body;
-    const user = await ClientModel.findById(userID);
-    const userFrom = from;
-    const userTo = to;
-    const availableRides = await RidesModel.find({
-      from: userFrom,
-      to: userTo,
-    });
-    if (!availableRides) {
-      return sendResponse(res, 400, null, true, "No Rides Available");
-    }
-    const riderdata = availableRides.map((data) => data.userID);
-    const matchedRides = await ClientModel.find({
-      _id: { $in: riderdata },
-      gender: user.gender,
-    });
-    const ridersID = matchedRides.map((data) => data.id);
-    const rideExpense = await RidesModel.find({
-      userID: { $in: ridersID },
-    });
-    sendResponse(res, 200, { matchedRides, user, rideExpense }, false, "Rides Found");
+    const results = await RidesModel.find({
+      "routes": {
+        $elemMatch: {
+          "ltd": { $gte: from.ltd - 0.001, $lte: from.ltd + 0.001 },  // +-0.01 tolerance for lat
+          "long": { $gte: from.long - 0.001, $lte: from.long + 0.001 } // +-0.01 tolerance for long
+        }
+      }
+    })
+    if(!results || results.length == 0) return sendResponse(res, 400, null, true, "Ride Not Available")
+    const matchingTo = results.filter(item =>
+      item.routes.some(route =>
+        route.ltd >= to.ltd - 0.001 && route.ltd <= to.ltd + 0.001 &&
+        route.long >= to.long - 0.001 && route.long <= to.long + 0.001
+      )
+    );
+    sendResponse(res, 200, null, false, "Rides Found");
   } catch (error) {
     sendResponse(res, 404, null, true, error.message);
   }
 });
+
+
 
 export default ridesRoutes;

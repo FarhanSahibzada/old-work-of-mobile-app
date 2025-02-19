@@ -153,6 +153,8 @@ userRouter.get("/allDrivers", async (req, res) => {
   } catch (error) {
     console.error("Error fetching drivers:", error.message);
     sendResponse(res, 400, null, true, "Internal Server Error");
+  }
+})
 
 // delete user API
 userRouter.delete("/:id", async (req, res) => {
