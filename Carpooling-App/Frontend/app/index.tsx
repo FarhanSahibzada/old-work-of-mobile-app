@@ -9,6 +9,7 @@ import { View, StyleSheet, Dimensions, Image, ScrollView, ActivityIndicator } fr
 import { useDispatch } from 'react-redux';
 import { AppRoutes } from './constant/constant';
 import { userLogin } from '../Store/UserAuthSlice';
+import HomeScreen from './(Driver)/(Home)';
 
 function Index() {
   const router = useRouter();

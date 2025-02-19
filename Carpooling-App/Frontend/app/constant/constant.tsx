@@ -9,4 +9,5 @@ export const AppRoutes = {
   getAllUser: BASE_URL + "/user/allUsers",
   getCurrentUser: BASE_URL + "/user/currentUser",
   SendRideData : BASE_URL + '/rides/user',
+  SendRideShare : BASE_URL + '/rides/rider',
 };
