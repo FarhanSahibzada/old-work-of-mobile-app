@@ -15,7 +15,7 @@ const clientSchema = new Schema(
     vehicleNo: { type: String },
     licenseNo: { type: String },
     vehicleImage: { type: String },
-    role: { type: String, required: true, enum: ["user", "rider", "admin"] },
+    role: { type: String, required: true, enum: ["user", "driver", "admin"] },
   },
   { timestamps: true }
 );

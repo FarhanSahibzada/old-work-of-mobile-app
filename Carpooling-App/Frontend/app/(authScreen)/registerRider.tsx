@@ -22,43 +22,43 @@ import { userLogin } from "../../Store/UserAuthSlice";
 
 interface FormData {
   name: string;
-  phoneNumber: string;
-  nicNo: string;
+  contact: string;
+  cnic: string;
   email: string;
   password: string;
   address: string;
   gender: string;
-  vehicleCategory: string;
-  vehicleNo: string;
+  vehicleType: string;
+  vehicleNumber: string;
   vehicleImage: string | null;
   profileImage: string | null;
   licenseNumber: string;
-  role?: string;
+  role?: string
 }
 
 const RegisterRider = () => {
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
       name: "",
-      phoneNumber: "",
-      nicNo: "",
+      contact: "",
+      cnic: "",
       email: "",
       password: "",
       address: "",
       gender: "",
-      vehicleCategory: "",
-      vehicleNo: "",
+      vehicleType: "",
+      vehicleNumber: "",
       vehicleImage: null,
       profileImage: null,
       licenseNumber: "",
-      role:""
     },
   });
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [vehicleImage, setVehicleImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const dispatch = useDispatch()
+
 
   const pickProfileImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -67,31 +67,29 @@ const RegisterRider = () => {
       aspect: [4, 4],
       quality: 1,
     });
-
     if (!result.canceled) {
-      const file = result.assets[0].uri;
-      if (!file) return console.log("Pic is Empty");
-      const cloud = process.env.VITE_CLOUDINARY_CLOUDNAME;
-      const data = new FormData();
-      data.append("file", file);
-      data.append("upload_preset", "Ride_Sharing");
-      data.append("folder", "Ride_Sharing/Users");
-      data.append("cloud_name", cloud);
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloud}/image/upload`,
-        {
-          method: "POST",
-          body: data,
+          const file = result.assets[0].uri;
+          if (!file) return console.log("Pic is Empty");
+          const cloud = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUDNAME;
+          const data = new FormData();
+          data.append("file", file);
+          data.append("upload_preset", "Ride_Sharing");
+          data.append("folder", "Ride_Sharing/Drivers");
+          data.append("cloud_name", cloud);
+          const res = await fetch(
+            `https://api.cloudinary.com/v1_1/${cloud}/image/upload`,
+            {
+              method: "POST",
+              body: data,
+            }
+          )
+            .then((response) => response.json())
+            .then(async (data) => {
+              const URL = data.url;
+              setProfileImage(URL)
+            });
         }
-      )
-        .then((response) => response.json())
-        .then(async (data) => {
-          const URL = data.url;
-          setProfileImage(URL);
-        });
-    }
   };
-
   const pickVehicleImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -103,7 +101,7 @@ const RegisterRider = () => {
     if (!result.canceled) {
       const file = result.assets[0].uri;
       if (!file) return console.log("Pic is Empty");
-      const cloud = process.env.VITE_CLOUDINARY_CLOUDNAME;
+      const cloud = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUDNAME;
       const data = new FormData();
       data.append("file", file);
       data.append("upload_preset", "Ride_Sharing");
@@ -119,7 +117,7 @@ const RegisterRider = () => {
         .then((response) => response.json())
         .then(async (data) => {
           const URL = data.url;
-          setVehicleImage(URL);
+          setVehicleImage(URL)
         });
     }
   };
@@ -127,13 +125,14 @@ const RegisterRider = () => {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     const formDataWithImage = { ...data, vehicleImage };
+    console.log("Submitted Data:", formDataWithImage.email);
 
     const obj = {
       email: formDataWithImage.email,
       password: formDataWithImage.password,
       name: formDataWithImage.name,
       gender: formDataWithImage.gender,
-      phoneNumber: formDataWithImage.phoneNumber,
+      phoneNumber: formDataWithImage.contact,
       address: formDataWithImage.address,
       profileImage: profileImage,
       nicNo: formDataWithImage.cnic,
@@ -141,24 +140,21 @@ const RegisterRider = () => {
       vehicleNo: formDataWithImage.vehicleNumber,
       licenseNo: "ked-0987",
       vehicleImage: vehicleImage,
-      role: "rider",
+      role: "driver",
     };
     console.log("obj", obj);
 
     try {
       const res = await axios.post(AppRoutes.signupRider, obj);
-      console.log(res);
       if (res && res.data) {
-        dispatch(userLogin(res.data.data))
-        if(data?.role === 'driver'){
-          router.push('/(Driver)/(Home)')
-          return
-        }else{
-          router.push('/(user)/(Home)')
-        }
+        const data = res.data?.data;
+        dispatch(userLogin(data))
+        console.log(data)
+        router.push('/(Driver)/(Home)')
+
       }
     } catch (error) {
-      console.log("error when submiting the data", error.message);
+      console.log("error when submiting the data", error);
     } finally {
       setLoading(false);
     }
@@ -215,7 +211,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>Contact</Text>
           <Controller
             control={control}
-            name="phoneNumber"
+            name="contact"
             rules={{
               required: "Contact is required",
               pattern: { value: /^[0-9]+$/, message: "Invalid contact number" },
@@ -238,7 +234,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>CNIC</Text>
           <Controller
             control={control}
-            name="nicNo"
+            name="cnic"
             rules={{
               required: "CNIC is required",
               minLength: { value: 13, message: "CNIC must be 13 digits" },
@@ -332,7 +328,7 @@ const RegisterRider = () => {
           <Text style={styles.label}>Vehicle Number</Text>
           <Controller
             control={control}
-            name="vehicleNo"
+            name="vehicleNumber"
             rules={{ required: "Vehicle number is required" }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <>
@@ -346,53 +342,28 @@ const RegisterRider = () => {
               </>
             )}
           />
-
- <View style={styles.rowContainer}>
-  {/* Gender */}
-  <View style={styles.pickerWrapper}>
-    <Text style={styles.label2}>Gender</Text>
-    <Controller
-      control={control}
-      name="gender"
-      render={({ field: { onChange, value } }) => (
-        <View style={styles.picker2}>
-          <Picker
-            selectedValue={value}
-            onValueChange={onChange}
-            style={styles.pickerStyle}
-          >
-            <Picker.Item label="Select Gender" value="" />
-            <Picker.Item label="Male" value="Male" />
-            <Picker.Item label="Female" value="Female" />
-          </Picker>
-        </View>
-      )}
-    />
-  </View>
-
-  {/* Vehicle Type */}
-  <View style={styles.pickerWrapper}>
-    <Text style={styles.label2}>Vehicle Type</Text>
-    <Controller
-      control={control}
-      name="vehicleCategory"
-      render={({ field: { onChange, value } }) => (
-        <View style={styles.picker2}>
-          <Picker
-            selectedValue={value}
-            onValueChange={onChange}
-            style={styles.pickerStyle}
-          >
-            <Picker.Item label="Select Vehicle Type" value="" />
-            <Picker.Item label="Bike" value="Bike" />
-            <Picker.Item label="Car" value="Car" />
-            <Picker.Item label="Rickshaw" value="Rickshaw" />
-          </Picker>
-        </View>
-      )}
-    />
-  </View>
-</View>
+          <View style={styles.rowContainer}>
+            {/* Gender */}
+            <View style={styles.pickerWrapper}>
+              <Text style={styles.label2}>Gender</Text>
+              <Controller
+                control={control}
+                name="gender"
+                render={({ field: { onChange, value } }) => (
+                  <View style={styles.picker2}>
+                    <Picker
+                      selectedValue={value}
+                      onValueChange={onChange}
+                      style={styles.pickerStyle}
+                    >
+                      <Picker.Item label="Select Gender" value="" />
+                      <Picker.Item label="Male" value="Male" />
+                      <Picker.Item label="Female" value="Female" />
+                    </Picker>
+                  </View>
+                )}
+              />
+            </View>
 
             {/* Vehicle Type */}
             <View style={styles.pickerWrapper}>
@@ -417,6 +388,7 @@ const RegisterRider = () => {
               />
             </View>
           </View>
+
 
           {/* Vehicle Image */}
           <TouchableOpacity
@@ -477,7 +449,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: "100%",
   },
-  label: { color: "#333", fontSize: 13, marginBottom: 8, fontWeight: "bold" },
+  label: { color: "#333", fontSize: 13, marginBottom: 8, fontWeight: "bold", },
   input: {
     borderWidth: 1,
     borderColor: "#E0E0E0",

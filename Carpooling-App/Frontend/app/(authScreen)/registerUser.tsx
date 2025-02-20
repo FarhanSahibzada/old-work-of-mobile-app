@@ -35,6 +35,39 @@ const RegisterUser = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
 
+  const pickProfileImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const file = result.assets[0].uri;
+      if (!file) return console.log("Pic is Empty");
+      const cloud = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUDNAME;
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", "Ride_Sharing");
+      data.append("folder", "Ride_Sharing/Users");
+      data.append("cloud_name", cloud);
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloud}/image/upload`,
+        {
+          method: "POST",
+          body: data,
+        }
+      )
+        .then((response) => response.json())
+        .then(async (data) => {
+          const URL = data.url;
+
+        });
+    }
+  };
+
+
   const onSubmit = async (data: FormData) => {
     setLoading(true)
     let formData = { ...data, role: "user" };

@@ -20,39 +20,11 @@ ridesRoutes.post("/rider", async (req, res) => {
 });
 
 
-//for finding similar rides with gender specification
-// ridesRoutes.post("/user", async (req, res) => {
-//   try {
-//     const { userID, from, to } = req.body;
-//     const user = await ClientModel.findById(userID);
-//     const userFrom = from;
-//     const userTo = to;
-//     const availableRides = await RidesModel.find({
-//       from: userFrom,
-//       to: userTo,
-//     });
-//     if (!availableRides) {
-//       return sendResponse(res, 400, null, true, "No Rides Available");
-//     }
-//     const riderdata = availableRides.map((data) => data.userID);
-//     const matchedRides = await ClientModel.find({
-//       _id: { $in: riderdata },
-//       gender: user.gender,
-//     });
-//     const ridersID = matchedRides.map((data) => data.id);
-//     const rideExpense = await RidesModel.find({
-//       userID: { $in: ridersID },
-//     });
-//     sendResponse(res, 200, { matchedRides, user, rideExpense }, false, "Rides Found");
-//   } catch (error) {
-//     sendResponse(res, 404, null, true, error.message);
-//   }
-// });
-
-
+// for finding similar rides with gender specification
 ridesRoutes.post("/user", async (req, res) => {
   try {
     const { userID, from, to } = req.body;
+    const user = await ClientModel.findById(userID);
     const results = await RidesModel.find({
       "routes": {
         $elemMatch: {
@@ -62,13 +34,23 @@ ridesRoutes.post("/user", async (req, res) => {
       }
     })
     if(!results || results.length == 0) return sendResponse(res, 400, null, true, "Ride Not Available")
-    const matchingTo = results.filter(item =>
-      item.routes.some(route =>
-        route.ltd >= to.ltd - 0.001 && route.ltd <= to.ltd + 0.001 &&
-        route.long >= to.long - 0.001 && route.long <= to.long + 0.001
-      )
-    );
-    sendResponse(res, 200, null, false, "Rides Found");
+      const matchingTo = results.filter(item =>
+    item.routes.some(route =>
+      route.ltd >= to.ltd - 0.001 && route.ltd <= to.ltd + 0.001 &&
+      route.long >= to.long - 0.001 && route.long <= to.long + 0.001
+    )
+  );
+  if(!matchingTo || matchingTo.length == 0) return sendResponse(res, 400, null, true, "Ride Not Available")
+  const riderdata = matchingTo.map((data) => data.userID);
+    const matchedRides = await ClientModel.find({
+      _id: { $in: riderdata },
+      gender: user.gender,
+    });
+    const ridersID = matchedRides.map((data) => data.id);
+    const rideExpense = await RidesModel.find({
+      userID: { $in: ridersID },
+    })
+    sendResponse(res, 200, {matchedRides, user, rideExpense}, false, "Rides Found");
   } catch (error) {
     sendResponse(res, 404, null, true, error.message);
   }
