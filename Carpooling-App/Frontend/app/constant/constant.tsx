@@ -1,4 +1,5 @@
-const devURL = "http://192.168.2.131:4000";
+// const devURL = "http://192.168.5.229:4000";
+const devURL = "https://carpool-backend-staging.up.railway.app";
 const prodURL = "";
 
 export const BASE_URL = devURL;
