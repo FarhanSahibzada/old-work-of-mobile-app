@@ -67,12 +67,22 @@ const RegisterRider = () => {
       aspect: [4, 4],
       quality: 1,
     });
-    if (!result.canceled) {
-          const file = result.assets[0].uri;
-          if (!file) return console.log("Pic is Empty");
+    if (!result.canceled && result.assets.length > 0) {
+      const uploadUrl = await uploadImageToCloudinary(result.assets[0]);
+      if (uploadUrl) {
+        setProfileImage(uploadUrl);
+      }
+    }
+  };
+          const uploadImageToCloudinary = async (image: any) => {
           const cloud = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUDNAME;
+          if (!image.uri) return null;
           const data = new FormData();
-          data.append("file", file);
+          data.append("file", {
+            uri: image.uri,
+            name: `profile_${Date.now()}.jpg`,
+            type: "image/jpeg",
+          } as any);
           data.append("upload_preset", "Ride_Sharing");
           data.append("folder", "Ride_Sharing/Drivers");
           data.append("cloud_name", cloud);
@@ -89,21 +99,33 @@ const RegisterRider = () => {
               setProfileImage(URL)
             });
         }
-  };
+  
   const pickVehicleImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 4], // yaha image crop ho rhi h
-      quality: 1, //full image quality set kerte hen
+      aspect: [4, 4], 
+      quality: 1, 
     });
 
-    if (!result.canceled) {
-      const file = result.assets[0].uri;
-      if (!file) return console.log("Pic is Empty");
-      const cloud = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUDNAME;
-      const data = new FormData();
-      data.append("file", file);
+    if (!result.canceled && result.assets.length > 0) {
+      const uploadUrl = await uploadImageToCloudinaryV(result.assets[0]);
+      if (uploadUrl) {
+        setProfileImage(uploadUrl);
+        console.log("uploadUrl",uploadUrl);
+        
+      }
+    }
+  };
+          const uploadImageToCloudinaryV = async (image: any) => {
+          const cloud = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUDNAME;
+          if (!image.uri) return null;
+          const data = new FormData();
+          data.append("file", {
+            uri: image.uri,
+            name: `profile_${Date.now()}.jpg`,
+            type: "image/jpeg",
+          } as any);
       data.append("upload_preset", "Ride_Sharing");
       data.append("folder", "Ride_Sharing/Vehicles");
       data.append("cloud_name", cloud);
@@ -117,10 +139,12 @@ const RegisterRider = () => {
         .then((response) => response.json())
         .then(async (data) => {
           const URL = data.url;
+          console.log("url",URL);
+          
           setVehicleImage(URL)
         });
     }
-  };
+  
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -138,7 +162,7 @@ const RegisterRider = () => {
       nicNo: formDataWithImage.cnic,
       vehicleCategory: formDataWithImage.vehicleType,
       vehicleNo: formDataWithImage.vehicleNumber,
-      licenseNo: "ked-0987",
+      licenseNo: formDataWithImage.licenseNumber,
       vehicleImage: vehicleImage,
       role: "driver",
     };
@@ -199,7 +223,7 @@ const RegisterRider = () => {
                 <TextInput
                   style={styles.input}
                   onChangeText={onChange}
-                  value={value}
+                  value={value ?? ""}
                   placeholder="Enter your name"
                 />
                 {error && <Text style={styles.errorText}>{error.message}</Text>}
@@ -342,6 +366,24 @@ const RegisterRider = () => {
               </>
             )}
           />
+          {/* licenseNo Number */}
+          <Text style={styles.label}>License Number</Text>
+          <Controller
+            control={control}
+            name="licenseNumber"
+            rules={{ required: "License Number is required" }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Enter License Number"
+                />
+                {error && <Text style={styles.errorText}>{error.message}</Text>}
+              </>
+            )}
+          />
           <View style={styles.rowContainer}>
             {/* Gender */}
             <View style={styles.pickerWrapper}>
@@ -397,8 +439,8 @@ const RegisterRider = () => {
           >
             <Text style={styles.imagePickerText}>Profile Image</Text>
           </TouchableOpacity>
-          {vehicleImage && (
-            <Image source={{ uri: vehicleImage }} style={styles.image} />
+          {profileImage && (
+            <Image source={{ uri: profileImage }} style={styles.image} />
           )}
           {/* Vehicle Image */}
           <TouchableOpacity
@@ -478,6 +520,7 @@ const styles = StyleSheet.create({
     height: 100,
     alignSelf: "center",
     marginBottom: 20,
+    marginTop:10,
     borderRadius: 8,
   },
   registerButton: {

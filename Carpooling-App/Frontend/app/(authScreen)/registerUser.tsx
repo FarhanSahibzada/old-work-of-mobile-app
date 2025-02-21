@@ -34,6 +34,8 @@ const RegisterUser = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
+    const [profileImage, setProfileImage] = useState<string | null>(null);
+
 
   const pickProfileImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -43,29 +45,38 @@ const RegisterUser = () => {
       quality: 1,
     });
 
-    if (!result.canceled) {
-      const file = result.assets[0].uri;
-      if (!file) return console.log("Pic is Empty");
-      const cloud = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUDNAME;
-      const data = new FormData();
-      data.append("file", file);
-      data.append("upload_preset", "Ride_Sharing");
-      data.append("folder", "Ride_Sharing/Users");
-      data.append("cloud_name", cloud);
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloud}/image/upload`,
-        {
-          method: "POST",
-          body: data,
-        }
-      )
-        .then((response) => response.json())
-        .then(async (data) => {
-          const URL = data.url;
-
-        });
+    if (!result.canceled && result.assets.length > 0) {
+      const uploadUrl = await uploadImageToCloudinary(result.assets[0]);
+      if (uploadUrl) {
+        setProfileImage(uploadUrl);
+      }
     }
   };
+          const uploadImageToCloudinary = async (image: any) => {
+          const cloud = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUDNAME;
+          if (!image.uri) return null;
+          const data = new FormData();
+          data.append("file", {
+            uri: image.uri,
+            name: `profile_${Date.now()}.jpg`,
+            type: "image/jpeg",
+          } as any);
+          data.append("upload_preset", "Ride_Sharing");
+          data.append("folder", "Ride_Sharing/Users");
+          data.append("cloud_name", cloud);
+          const res = await fetch(
+            `https://api.cloudinary.com/v1_1/${cloud}/image/upload`,
+            {
+              method: "POST",
+              body: data,
+            }
+          )
+            .then((response) => response.json())
+            .then(async (data) => {
+              const URL = data.url;
+              setProfileImage(URL)
+            });
+        }
 
 
   const onSubmit = async (data: FormData) => {
@@ -164,7 +175,7 @@ const RegisterUser = () => {
             control={control} name="gender" rules={{ required: "gender is required" }}
             render={({ field: { onChange, value, } }) => (
               <View style={styles.picker}>
-                <Picker selectedValue={value} onValueChange={onChange} style={{ height: 50, width: "100%" }}>
+                <Picker selectedValue={value} onValueChange={onChange} style={{ height: 49, width: "100%" }}>
                   <Picker.Item label="Select Gender" value="" />
                   <Picker.Item label="Male" value="Male" />
                   <Picker.Item label="Female" value="Female" />
@@ -172,7 +183,15 @@ const RegisterUser = () => {
               </View>
             )}
           />
-
+   <TouchableOpacity
+            onPress={pickProfileImage}
+            style={styles.imagePickerButton}
+          >
+            <Text style={styles.imagePickerText}>Profile Image</Text>
+          </TouchableOpacity>
+          {profileImage && (
+            <Image source={{ uri: profileImage }} style={styles.image} />
+          )}
 
           <TouchableOpacity onPress={handleSubmit(onSubmit, (errors) => {
             console.log("erros", errors)
@@ -209,9 +228,25 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
   },
+  imagePickerButton: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 4,
+    alignItems: "center",
+    marginTop:8,
+  },
+  imagePickerText: { color: "#FFFFFF", fontSize: 14, fontWeight: "900" },
   picker: {
     borderWidth: 2,
     borderColor: "#ccc",
+    borderRadius: 8,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+    marginBottom: 10,
+    marginTop:10,
     borderRadius: 8,
   },
   label: {
@@ -260,7 +295,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 5,
     alignItems: "center",
-    marginTop: 15,
+    marginTop: 8,
   },
   registerButtonText: {
     color: "#FFF",
@@ -275,4 +310,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default RegisterUser;
+export default RegisterUser;
