@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { AppRoutes } from './constant/constant';
 import { userLogin } from '../Store/UserAuthSlice';
 import HomeScreen from './(Driver)/(Home)';
+import UserGetRide from './pages/UserGetRide';
 
 function Index() {
   const router = useRouter();

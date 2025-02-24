@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Alert, KeyboardAvoidingView, ScrollView, Platform, Modal, Button } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../Store/Store';
@@ -25,6 +26,10 @@ export default function HomeScreen() {
   const ApiKey = process.env.EXPO_PUBLIC_API_KEY;
   const router = useRouter();
   const mapRef = useRef<MapView | null>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+    const [inputValue, setInputValue] = useState("");
+
   const [region, setRegion] = useState({
     latitude: 24.8607,
     longitude: 67.0011,
@@ -60,6 +65,26 @@ export default function HomeScreen() {
       mapRef.current.animateToRegion(newRegion, 1000);
     }
   }, [pickupLocation]);
+
+  const handleSubmit = () => {
+    console.log(`Selected Option: ${selectedOption}, Input Value: ${inputValue}`);
+    setIsModalVisible(false);
+    setInputValue(""); // Reset input field
+  };
+
+
+  const options = [
+    { label: "Route 1", value: "Route 1" },
+    { label: "Route 2", value: "Route 2" },
+    { label: "Route 3", value: "Route 3" },
+  ]
+  
+  const handleSelect = (value: string) => {
+    if (value) {
+      setSelectedOption(value);
+      setIsModalVisible(true);
+    }
+  };
 
   const confirmRide = async () => {
     if (!currentLocationText || !destinationText) {
@@ -145,7 +170,7 @@ export default function HomeScreen() {
       >
         <View style={styles.container}>
           {/* Map Section */}
-          <View style={{ borderRadius: 20, overflow: 'hidden', marginTop: 20 }}>
+          <View style={{ overflow: 'hidden', marginTop: 20 }}>
             <MapView
               style={{ width: width, height: height * 0.6 }} // 60% height
               ref={mapRef}
@@ -201,7 +226,6 @@ export default function HomeScreen() {
                 onChangeText={(text) => setCurrentLocationText(text)}
               />
             </View>
-
             <View style={styles.inputWrapper}>
               <MaterialIcons name="location-on" size={20} color="red" />
               <TextInput
@@ -210,6 +234,33 @@ export default function HomeScreen() {
                 onChangeText={(text) => setDestinationText(text)}
               />
             </View>
+          {/* {dropdwon} */}
+          <RNPickerSelect
+                  onValueChange={handleSelect}
+                  items={options}
+                  placeholder={{ label: "Choose an option...", value: null }}
+                />
+
+          <Modal visible={isModalVisible} transparent animationType="slide">
+                  <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" }}>
+                    <View style={{ width: 300, padding: 20, backgroundColor: "white", borderRadius: 10 }}>
+                    <TouchableOpacity
+              onPress={() => setIsModalVisible(false)}
+              style={{ position: "absolute", top: 10, right: 10 }}
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+                      <Text style={{ fontSize: 18, marginBottom: 10 }}>Enter Value for {selectedOption}:</Text>
+                      <TextInput
+                        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+                        placeholder="Enter value"
+                        value={inputValue}
+                        onChangeText={setInputValue}
+                      />
+                      <Button title="Submit" onPress={handleSubmit} />
+                    </View>
+                  </View>
+                </Modal>
 
             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
               <View style={styles.inputWrapperB}>
