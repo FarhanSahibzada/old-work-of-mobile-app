@@ -4,11 +4,15 @@ import cors from "cors";
 import "dotenv/config";
 import userRouter from "./Routes/UserRoutes.js";
 import ridesRoutes from "./Routes/RidesRoutes.js";
-import http from "http";
 import { Server } from "socket.io";
+import { createServer } from "http";
 
 const app = express();
 // const port = 4000;
+const server = createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" },
+});
 const port = process.env.PORT || 4000; // use process.env.PORT for Vercel
 
 // for mongo db connection
@@ -20,20 +24,62 @@ mongoose.connection.on("open", () => {
   console.log("MongoDB is connected successfully");
 });
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: "*" },
-});
 
+const connectedDriver = {}
+const connectedUser = {}
 
 io.on("connection", (socket) => {
-  console.log("A user Connected==> ", socket?.id)
-  //send msg to channel name "data"
-  socket.on("data", (data)=>{
-    console.log("Ather ki taraf se aaya wa data ==> ", data)
+  socket.on("driver-register", (payload) => {
+    console.log("driversocket id " , socket.id)
+    console.log("payload form frontend ==> ", payload.driverId)
+    connectedDriver[payload?.driverId] = socket?.id;
   });
-  //recieve something on channel name "message"
-  socket.emit("message" , "hello to client")
+
+  socket.on('request-ride', (payload) => {
+    console.log("clientsocket id " , socket.id)
+    connectedUser[payload?.clientId] = socket.id;
+    const driverAvailable = connectedDriver[payload?.driverId]
+    if (driverAvailable) {
+      io.to(driverAvailable).emit("ride-request", { payload })
+    } else {
+      socket.emit("driver-available", { message: "Driver is offline" });
+    }
+  })
+
+  socket.on('reject-ride', ({ userId }) => {
+    const existingUser = connectedUser[userId]
+    if (existingUser) {
+      io.to(existingUser).emit("promise", { message: "reject" })
+      delete connectedUser[userId];
+    }
+  })
+
+  socket.on("Accept-ride", (payload) => {
+    const existingUser = connectedUser[payload?.clientId]
+    if (existingUser) {
+      console.log("exist user", existingUser)
+      io.to(existingUser).emit("ride-accept", { payload })
+    } else {
+      socket.emit("user-offline", { message: "user is offline" })
+    }
+  })
+
+  socket.on("update-driver-location", (payload)=>{
+    const connectuser = connectedUser[payload?.clientId]
+    if(connectuser){
+      socket.to(connectuser).emit("update-location" , {payload})
+    }
+  })
+
+  // socket.on('disconnect', () => {
+  //   Object.keys(connectedDriver).forEach((driverId) => {
+  //     if (connectedDriver[driverId] === socket.id) {
+  //       delete connectedDriver[driverId];
+  //       console.log(`Driver ${driverId} disconnected.`);
+  //     }
+  //   })
+  // })
+
 });
 
 // main page message

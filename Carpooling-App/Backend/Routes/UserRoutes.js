@@ -115,7 +115,6 @@ userRouter.get("/currentUser", verifyToken, async (req, res) => {
     const currentUser = await ClientModel.findById(req.user.id).select(
       "-password -address"
     );
-    console.log("Current User from DB:", currentUser);
     sendResponse(res, 200, currentUser, false, "Fetched Data Successfully");
   } catch (error) {
     sendResponse(res, 500, null, true, "xxxxxxxxxxxxxx");

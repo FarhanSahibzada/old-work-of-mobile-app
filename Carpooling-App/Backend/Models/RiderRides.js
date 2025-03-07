@@ -6,7 +6,7 @@ const RidesSchema = new Schema(
     userID: { type: String, required: true },
     availableSeats: { type: String },
     farePerSeat : {type : String},
-    routes : [{"ltd": Number, "long": Number}],
+    routes : [{"latitude": Number, "longitude": Number}],
   },
   { timestamps: true }
 );

@@ -28,16 +28,16 @@ ridesRoutes.post("/user", async (req, res) => {
     const results = await RidesModel.find({
       "routes": {
         $elemMatch: {
-          "ltd": { $gte: from.ltd - 0.001, $lte: from.ltd + 0.001 },  // +-0.01 tolerance for lat
-          "long": { $gte: from.long - 0.001, $lte: from.long + 0.001 } // +-0.01 tolerance for long
+          "latitude": { $gte: from.latitude - 0.01, $lte: from.latitude + 0.01 },  // +-0.01 tolerance for lat
+          "longitude": { $gte: from.longitude - 0.01, $lte: from.longitude + 0.01 } // +-0.01 tolerance for longitude
         }
       }
     })
-    if(!results || results.length == 0) return sendResponse(res, 400, null, true, "Ride Not Available")
+    if(!results || results.length == 0) return sendResponse(res, 403, null, true, "Ride Not Available")
       const matchingTo = results.filter(item =>
     item.routes.some(route =>
-      route.ltd >= to.ltd - 0.001 && route.ltd <= to.ltd + 0.001 &&
-      route.long >= to.long - 0.001 && route.long <= to.long + 0.001
+      route.latitude >= to.latitude - 0.01 && route.latitude <= to.latitude + 0.01 &&
+      route.longitude >= to.longitude - 0.01 && route.longitude <= to.longitude + 0.01
     )
   );
   if(!matchingTo || matchingTo.length == 0) return sendResponse(res, 400, null, true, "Ride Not Available")
@@ -55,7 +55,6 @@ ridesRoutes.post("/user", async (req, res) => {
     sendResponse(res, 404, null, true, error.message);
   }
 });
-
 
 
 export default ridesRoutes;
